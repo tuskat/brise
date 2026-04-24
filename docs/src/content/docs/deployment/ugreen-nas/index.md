@@ -250,6 +250,7 @@ Data, personas, and proxies are preserved — they all live in `data/history.db`
 | `addgroup: gid '1000' in use` during image build | Stale `APP_UID=0` detected from a root-owned volume | The script now ignores UID 0; update to the latest script and re-run |
 | Container exits immediately | Port conflict or missing dirs | Check logs: UGOS Docker UI → container → Logs |
 | Can't reach `http://NAS_IP:4321` | Firewall blocking port | UGOS Pro → Security → Firewall — allow 4321, 4322 |
+| Chrome on Mac refuses to connect (`Unsafe attempt to load URL https://…`, works in Safari/Firefox) | Chrome force-upgrades plain-IP hosts to HTTPS and will not un-stick on private LAN IPs — even after clearing HSTS and disabling "Always use secure connections" | Use Safari, Firefox, or Edge for the NAS. This affects every HTTP-only service on the LAN, not just Brise. If you need Chrome, put the NAS behind a reverse proxy with a real TLS cert (or a LAN-trusted one) |
 | Database empty on restart | Data volume not mounted | Make sure `/app/data` is mapped to a persistent NAS folder |
 | Docs site (port 4322) stuck in redirect loop | Old image served SPA-mode static; missing for newer builds | Rebuild with the current Dockerfile — `serve` no longer uses `-s` |
 | Personas fail to load / save | Old bind-mount `personas/` still around on NAS | Safe to delete: `rm -rf /volume1/docker/brise/personas` — data moved to SQLite |
