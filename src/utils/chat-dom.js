@@ -4,6 +4,7 @@
  */
 
 import { escapeHtml, formatTime } from './helpers.js';
+import { t } from '../i18n/index.js';
 
 // ── SVG fragments (kept here to avoid inline noise in the component) ──
 
@@ -28,7 +29,7 @@ export function buildMessageHtml(msg) {
       (!isUser && msg.persona_name ? '<span class="t-micro t-weight-500 c-accent">' + escapeHtml(msg.persona_name) + '</span>' : '') +
       '<span class="t-micro c-tertiary">' + time + '</span>' +
       (!isUser && msg.latency ? '<span class="t-caption-mono c-tertiary">' + msg.latency + 'ms</span>' : '') +
-      '<button class="icon-btn chat-msg-copy" data-content="' + escapeHtml(msg.content) + '" title="Copy">' +
+      '<button class="icon-btn chat-msg-copy" data-content="' + escapeHtml(msg.content) + '" title="' + t('general.copy') + '">' +
         SVG_COPY +
       '</button>' +
     '</div>' +
@@ -63,7 +64,7 @@ export function appendErrorMessage(container, error) {
   if (!container) return;
   container.insertAdjacentHTML('beforeend',
     '<div class="chat-msg flex-col chat-msg-assistant self-start chat-msg-error">' +
-    '<div class="chat-msg-bubble">Error: ' + escapeHtml(error) + '</div></div>');
+    '<div class="chat-msg-bubble">' + t('general.error') + ': ' + escapeHtml(error) + '</div></div>');
   scrollToBottom(container);
 }
 
@@ -118,13 +119,13 @@ export function removeStreamingMessage(id) {
  * Build an HTML string for a sidebar conversation list item.
  */
 export function buildConversationItemHtml(conv, isActive) {
-  const preview = conv.last_message ? (conv.last_message.length > 40 ? conv.last_message.substring(0, 40) + '...' : conv.last_message) : 'No messages';
+  const preview = conv.last_message ? (conv.last_message.length > 40 ? conv.last_message.substring(0, 40) + '...' : conv.last_message) : t('chat.noMessages');
   const timeAgo = formatTime(conv.updated_at || conv.created_at);
   return '<div class="chat-conv-item' + (isActive ? ' chat-conv-item-active' : '') + '" data-id="' + conv.id + '">' +
     '<div class="truncate t-caption c-primary">' + escapeHtml(conv.title) + '</div>' +
     '<div class="truncate t-micro c-tertiary">' + escapeHtml(preview) + '</div>' +
     '<div class="t-micro c-tertiary">' + timeAgo + '</div>' +
-    '<button class="icon-btn" data-id="' + conv.id + '" title="Delete">' +
+    '<button class="icon-btn" data-id="' + conv.id + '" title="' + t('general.delete') + '">' +
       SVG_DELETE +
     '</button>' +
   '</div>';
@@ -138,7 +139,7 @@ function bindCopyButtons(root) {
     btn.addEventListener('click', () => {
       const content = btn.dataset.content || '';
       navigator.clipboard.writeText(content).then(() => {
-        if (window.showToast) window.showToast({ message: 'Copied!', variant: 'success' });
+        if (window.showToast) window.showToast({ message: t('general.copied'), variant: 'success' });
       });
     });
   });

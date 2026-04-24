@@ -5,8 +5,9 @@
 
 import { $ } from './pg-state.js';
 import { fetchPlaygroundHistory, historyDownloadUrl, loadPlaygroundDropdowns as apiLoadDropdowns } from './playground-api.js';
-import { renderHistoryList, renderAIResponse } from './playground-dom.js';
+import { renderHistoryList, renderAIResponse, getExt } from './playground-dom.js';
 import { escapeHtml } from './helpers.js';
+import { t } from '../i18n/index.js';
 
 function showToast(opts) { window.showToast?.(opts); }
 
@@ -17,13 +18,13 @@ function showToast(opts) { window.showToast?.(opts); }
 export async function loadHistoryList() {
   const historyList = $('history-list');
   if (!historyList) return;
-  historyList.innerHTML = '<p class="placeholder">Loading history...</p>';
+  historyList.innerHTML = '<p class="placeholder">' + t('history.loadingHistory') + '</p>';
 
   try {
     const history = await fetchPlaygroundHistory();
     renderHistoryList(historyList, history, showHistoryDetail);
   } catch (err) {
-    historyList.innerHTML = '<p class="c-tertiary text-center t-caption">Error: ' + escapeHtml(err.message) + '</p>';
+    historyList.innerHTML = '<p class="c-tertiary text-center t-caption">' + t('general.error') + ': ' + escapeHtml(err.message) + '</p>';
   }
 }
 
@@ -47,7 +48,7 @@ function showHistoryDetail(item) {
   // Build action row: download buttons + redo
   let downloadBtns = '';
   if (item.format) {
-    formatChip = '<div class="detail-meta-cell"><span class="detail-meta-label">Format</span><span class="badge badge-caps badge-accent">' + escapeHtml(item.format) + '</span></div>';
+    formatChip = '<div class="detail-meta-cell"><span class="detail-meta-label">' + t('history.format') + '</span><span class="badge badge-caps badge-accent">' + escapeHtml(item.format) + '</span></div>';
 
     const filesCount = item.files_count || 1;
     for (let f = 1; f <= filesCount; f++) {
@@ -58,16 +59,16 @@ function showHistoryDetail(item) {
   }
   const actionsRow = '<div class="detail-meta-actions flex-row gap-sm flex-wrap">' +
     downloadBtns +
-    '<button class="btn btn-secondary btn-xs" id="detail-redo-btn">↻ Redo</button>' +
+    '<button class="btn btn-secondary btn-xs" id="detail-redo-btn">' + t('history.redo') + '</button>' +
   '</div>';
 
   const metaCard =
     '<div class="card detail-meta-card">' +
       '<div class="detail-meta-grid">' +
-        '<div class="detail-meta-cell"><span class="detail-meta-label">Timestamp</span><span class="detail-meta-value">' + new Date(item.timestamp).toLocaleString() + '</span></div>' +
-        '<div class="detail-meta-cell"><span class="detail-meta-label">Persona</span><span class="detail-meta-value c-accent">' + (item.persona_id || 'Default') + '</span></div>' +
-        '<div class="detail-meta-cell"><span class="detail-meta-label">Status</span>' + statusBadge + '</div>' +
-        '<div class="detail-meta-cell"><span class="detail-meta-label">Latency</span><span class="detail-meta-value t-caption-mono">' + item.latency + 'ms</span></div>' +
+        '<div class="detail-meta-cell"><span class="detail-meta-label">' + t('history.timestamp') + '</span><span class="detail-meta-value">' + new Date(item.timestamp).toLocaleString() + '</span></div>' +
+        '<div class="detail-meta-cell"><span class="detail-meta-label">' + t('history.persona') + '</span><span class="detail-meta-value c-accent">' + (item.persona_id || t('general.default')) + '</span></div>' +
+        '<div class="detail-meta-cell"><span class="detail-meta-label">' + t('history.status') + '</span>' + statusBadge + '</div>' +
+        '<div class="detail-meta-cell"><span class="detail-meta-label">' + t('history.latency') + '</span><span class="detail-meta-value t-caption-mono">' + item.latency + 'ms</span></div>' +
         formatChip +
       '</div>' +
       actionsRow +
@@ -79,9 +80,9 @@ function showHistoryDetail(item) {
       '<div class="detail-section-header flex-row row-between">' +
         '<button class="detail-section-toggle" data-target="detail-user-prompt" aria-expanded="true">' +
           '<svg class="detail-section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>' +
-          '<span class="label label-sm">User Prompt</span>' +
+          '<span class="label label-sm">' + t('history.userPrompt') + '</span>' +
         '</button>' +
-        '<button class="btn btn-secondary btn-xs detail-copy-btn" data-copy-target="detail-user-prompt">Copy</button>' +
+        '<button class="btn btn-secondary btn-xs detail-copy-btn" data-copy-target="detail-user-prompt">' + t('general.copy') + '</button>' +
       '</div>' +
       '<div class="detail-section-body" id="detail-user-prompt-wrap">' +
         '<div class="text-block text-block-prompt" id="detail-user-prompt">' + escapeHtml(item.user_prompt) + '</div>' +
@@ -94,9 +95,9 @@ function showHistoryDetail(item) {
       '<div class="detail-section-header flex-row row-between">' +
         '<button class="detail-section-toggle" data-target="detail-ai-response" aria-expanded="true">' +
           '<svg class="detail-section-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>' +
-          '<span class="label label-sm">AI Response</span>' +
+          '<span class="label label-sm">' + t('history.aiResponse') + '</span>' +
         '</button>' +
-        '<button class="btn btn-secondary btn-xs detail-copy-btn" data-copy-target="detail-ai-response">Copy</button>' +
+        '<button class="btn btn-secondary btn-xs detail-copy-btn" data-copy-target="detail-ai-response">' + t('general.copy') + '</button>' +
       '</div>' +
       '<div class="detail-section-body" id="detail-ai-response-wrap">' +
         '<div class="text-block" id="detail-ai-response"></div>' +
@@ -125,8 +126,8 @@ function showHistoryDetail(item) {
       if (target) {
         const text = getCopyText(target);
         navigator.clipboard.writeText(text).then(() => {
-          btn.textContent = 'Copied!';
-          setTimeout(() => { btn.textContent = 'Copy'; }, 1500);
+          btn.textContent = t('general.copied');
+          setTimeout(() => { btn.textContent = t('general.copy'); }, 1500);
         });
       }
     });
@@ -158,11 +159,6 @@ function showHistoryDetail(item) {
 
   // Scroll detail into view
   detailView.scrollIntoView({ behavior: 'smooth', block: 'start' });
-}
-
-function getExt(format) {
-  const EXT_MAP = { md: 'md', html: 'html', json: 'json', 'json-strict': 'json', csv: 'csv' };
-  return EXT_MAP[format] || 'txt';
 }
 
 // ═══════════════════════════════════════════════════════════

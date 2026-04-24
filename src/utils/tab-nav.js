@@ -6,6 +6,7 @@
 import { loadMetrics } from './dashboard-state.js';
 import { loadPersonasList, initPersonasEvents } from './personas-state.js';
 import { loadProxiesList, initProxiesEvents, getProxies } from './proxies-state.js';
+import { applyTranslations } from '../i18n/index.js';
 
 // ═══════════════════════════════════════════════════════════
 // STATE
@@ -212,4 +213,7 @@ export function initTabNav() {
   } else {
     switchTab('dashboard');
   }
+
+  // Apply i18n to sidebar (already done by Layout init, but safe to re-apply)
+  applyTranslations();
 }

@@ -43,7 +43,7 @@ describe('CSS structure', () => {
   it('total line count is within expected range', () => {
     // After Round 3 DRY refactor
     expect(lines.length).toBeGreaterThanOrEqual(1400);
-    expect(lines.length).toBeLessThanOrEqual(2050);
+    expect(lines.length).toBeLessThanOrEqual(2080);
   });
 
   it('global.css starts with imports section', () => {

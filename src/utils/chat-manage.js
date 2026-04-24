@@ -10,6 +10,7 @@ import {
 } from './chat-api.js';
 import { loadConversations, selectConversation, renderConversationList } from './chat-sidebar.js';
 import { updateSendButton } from './chat-thread.js';
+import { t } from '../i18n/index.js';
 
 function showToast(opts) { window.showToast?.(opts); }
 
@@ -26,7 +27,7 @@ export async function handleNewConversation() {
   const proxy_id = chatProxySelect?.value || null;
 
   if (!proxy_id) {
-    showToast({ message: 'Please select a proxy first', variant: 'warning' });
+    showToast({ message: t('chat.selectProxyFirst'), variant: 'warning' });
     return;
   }
 
@@ -46,7 +47,7 @@ export async function handleNewConversation() {
 // ═══════════════════════════════════════════════════════════
 
 export async function handleDelete(id) {
-  if (!confirm('Are you sure you want to delete this conversation?')) return;
+  if (!confirm(t('chat.deleteConfirm'))) return;
 
   const chatEmptyState = $('chat-empty-state');
   const chatThread     = $('chat-thread');
@@ -59,7 +60,7 @@ export async function handleDelete(id) {
       chatThread?.classList.add('js-hidden');
     }
     await loadConversations();
-    showToast({ message: 'Conversation deleted', variant: 'success' });
+    showToast({ message: t('chat.conversationDeleted'), variant: 'success' });
   } catch (err) {
     console.error('Failed to delete conversation:', err);
     showToast({ message: 'Error: ' + err.message, variant: 'error' });
@@ -95,7 +96,7 @@ async function handleSaveTitle() {
     if (conversationTitle) conversationTitle.textContent = newTitle;
     await loadConversations();
     titleEditModal?.classList.remove('js-open');
-    showToast({ message: 'Title updated', variant: 'success' });
+    showToast({ message: t('chat.titleUpdated'), variant: 'success' });
   } catch (err) {
     console.error('Failed to rename:', err);
     showToast({ message: 'Error: ' + err.message, variant: 'error' });

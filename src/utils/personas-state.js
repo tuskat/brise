@@ -4,6 +4,7 @@
  */
 
 import { escapeHtml } from './helpers.js';
+import { t } from '../i18n/index.js';
 
 const showToast = () => window.showToast;
 
@@ -46,7 +47,7 @@ function getRefs() {
 export async function loadPersonasList() {
   const { personasList } = getRefs();
   if (!personasList) return;
-  personasList.innerHTML = '<p class="placeholder">Loading personas...</p>';
+  personasList.innerHTML = '<p class="placeholder">' + t('personas.loading') + '</p>';
 
   try {
     const response = await fetch('/api/personas');
@@ -59,7 +60,7 @@ export async function loadPersonasList() {
     personas = data;
 
     if (personas.length === 0) {
-      personasList.innerHTML = '<p class="placeholder">No personas yet. Create one to get started.</p>';
+      personasList.innerHTML = '<p class="placeholder">' + t('personas.noneYet') + '</p>';
       return;
     }
 
@@ -80,8 +81,8 @@ export async function loadPersonasList() {
           </p>
         </div>
         <div class="flex-row gap-sm mt-md pt-md border-t">
-          <button class="btn btn-primary" data-id="${escapeHtml(p.id)}">Edit</button>
-          <button class="btn btn-danger" data-id="${escapeHtml(p.id)}" data-name="${escapeHtml(p.name)}">Delete</button>
+          <button class="btn btn-primary" data-id="${escapeHtml(p.id)}">${t('general.edit')}</button>
+          <button class="btn btn-danger" data-id="${escapeHtml(p.id)}" data-name="${escapeHtml(p.name)}">${t('general.delete')}</button>
         </div>
       `;
 
@@ -94,7 +95,7 @@ export async function loadPersonasList() {
       personasList.appendChild(card);
     });
   } catch (err) {
-    personasList.innerHTML = `<p class="placeholder">Error: ${escapeHtml(err.message)}</p>`;
+    personasList.innerHTML = `<p class="placeholder">${t('general.error')}: ${escapeHtml(err.message)}</p>`;
   }
 }
 
@@ -106,8 +107,8 @@ function openNewPersonaModal() {
   const refs = getRefs();
   editingPersonaId = null;
   refs.personaForm?.reset();
-  if (refs.personaFormTitle) refs.personaFormTitle.textContent = 'New Persona';
-  if (refs.personaFormSubmit) refs.personaFormSubmit.textContent = 'Create Persona';
+  if (refs.personaFormTitle) refs.personaFormTitle.textContent = t('personas.form.newTitle');
+  if (refs.personaFormSubmit) refs.personaFormSubmit.textContent = t('personas.form.createBtn');
   const idInput = document.getElementById('pf-id');
   if (idInput) idInput.disabled = false;
   refs.personaFormModal?.classList.add('js-open');
@@ -134,15 +135,19 @@ function openEditPersonaModal(id) {
   if (topPInput)        topPInput.value = persona.parameters?.top_p?.toString() ?? '0.9';
   if (maxTokensInput)   maxTokensInput.value = persona.parameters?.max_tokens?.toString() ?? '2000';
 
-  if (refs.personaFormTitle)  refs.personaFormTitle.textContent = 'Edit Persona';
-  if (refs.personaFormSubmit) refs.personaFormSubmit.textContent = 'Save Changes';
+  if (refs.personaFormTitle)  refs.personaFormTitle.textContent = t('personas.form.editTitle');
+  if (refs.personaFormSubmit) refs.personaFormSubmit.textContent = t('personas.form.saveBtn');
   refs.personaFormModal?.classList.add('js-open');
 }
 
 function openDeletePersonaModal(name, id) {
   const refs = getRefs();
   deletingPersonaId = id;
-  if (refs.deletePersonaName) refs.deletePersonaName.textContent = name;
+  // Set the delete confirmation text with the name interpolated
+  const confirmText = document.getElementById('persona-delete-confirm-text');
+  if (confirmText) {
+    confirmText.innerHTML = t('personas.delete.confirm', { name: '<strong id="delete-persona-name">' + escapeHtml(name) + '</strong>' });
+  }
   refs.personaDeleteModal?.classList.add('js-open');
 }
 
@@ -168,7 +173,7 @@ async function handlePersonaFormSubmit(e) {
   const max_tokens    = parseInt(maxTokensInput?.value) || 2000;
 
   if (!id || !name || !system_prompt) {
-    showToast()?.({ message: 'Please fill in all required fields', variant: 'warning' });
+    showToast()?.({ message: t('personas.form.required'), variant: 'warning' });
     return;
   }
 
@@ -185,11 +190,11 @@ async function handlePersonaFormSubmit(e) {
     const result = await response.json();
 
     if (!response.ok) {
-      showToast()?.({ message: result.error || 'Failed to save persona', variant: 'error' });
+      showToast()?.({ message: result.error || t('personas.form.saveFailed'), variant: 'error' });
       return;
     }
 
-    showToast()?.({ message: editingPersonaId ? 'Persona updated' : 'Persona created', variant: 'success' });
+    showToast()?.({ message: editingPersonaId ? t('personas.form.updated') : t('personas.form.created'), variant: 'success' });
     const { personaFormModal } = getRefs();
     personaFormModal?.classList.remove('js-open');
     loadPersonasList();
@@ -213,11 +218,11 @@ async function handlePersonaDelete() {
     const result = await response.json();
 
     if (!response.ok) {
-      showToast()?.({ message: result.error || 'Failed to delete persona', variant: 'error' });
+      showToast()?.({ message: result.error || t('personas.delete.failed'), variant: 'error' });
       return;
     }
 
-    showToast()?.({ message: 'Persona deleted', variant: 'success' });
+    showToast()?.({ message: t('personas.delete.success'), variant: 'success' });
     const { personaDeleteModal } = getRefs();
     personaDeleteModal?.classList.remove('js-open');
     loadPersonasList();

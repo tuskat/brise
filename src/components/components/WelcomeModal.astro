@@ -1,30 +1,22 @@
----
----
 <div id="welcome-modal" class="modal welcome-modal js-hidden">
   <div class="welcome-modal-card">
     <div style="font-size:3rem;margin-bottom:1rem">⚠️</div>
-    <h1 class="t-hero c-warning">Security Notice</h1>
-    <p class="t-title c-secondary t-weight-500" style="margin:0 0 1.5rem">Brise is designed for LOCAL NETWORK use only.</p>
+    <h1 class="t-hero c-warning" data-i18n="welcome.title"></h1>
+    <p class="t-title c-secondary t-weight-500" style="margin:0 0 1.5rem" data-i18n="welcome.subtitle"></p>
     
     <div class="welcome-modal-warning">
-      <p class="c-warning t-weight-600 t-caption m-0 mb-sm">
-        Exposing this application to the public internet may result in:
-      </p>
+      <p class="c-warning t-weight-600 t-caption m-0 mb-sm" data-i18n="warning.exposingMayResult"></p>
       <ul class="welcome-modal-list c-primary t-caption">
-        <li>Unauthorized access to your LLM backends</li>
-        <li>API key theft (stored in plaintext)</li>
-        <li>Prompt injection attacks</li>
-        <li>Resource abuse (running up API costs)</li>
+        <li data-i18n="warning.unauthorizedAccess"></li>
+        <li data-i18n="warning.apiKeyTheft"></li>
+        <li data-i18n="warning.promptInjection"></li>
+        <li data-i18n="warning.resourceAbuse"></li>
       </ul>
     </div>
     
-    <p class="c-secondary t-caption mb-md">
-      Only deploy on trusted networks. Use a VPN or reverse proxy with authentication if remote access is required.
-    </p>
+    <p class="c-secondary t-caption mb-md" data-i18n="warning.deployTrusted"></p>
     
-    <button id="welcome-acknowledge-btn" class="btn btn-primary btn-lg">
-      I understand — Continue
-    </button>
+    <button id="welcome-acknowledge-btn" class="btn btn-primary btn-lg" data-i18n="welcome.acknowledge"></button>
   </div>
 </div>
 

@@ -3,6 +3,8 @@
  * Returns parsed JSON; callers handle UI state.
  */
 
+import { t } from '../i18n/index.js';
+
 /**
  * Populate <select> elements with personas and proxies for Playground.
  */
@@ -11,7 +13,7 @@ export async function loadPlaygroundDropdowns(personaSelect, proxySelect) {
     const res = await fetch('/api/personas');
     const data = await res.json();
     if (res.ok && Array.isArray(data) && personaSelect) {
-      personaSelect.innerHTML = '<option value="">Default (No Persona)</option>';
+      personaSelect.innerHTML = '<option value="">' + t('pg.noPersona') + '</option>';
       data.forEach(p => {
         const opt = document.createElement('option');
         opt.value = p.id;

@@ -5,18 +5,11 @@
  */
 
 import { escapeHtml, truncate, formatTime } from './helpers.js';
+import { t } from '../i18n/index.js';
 
 // ═══════════════════════════════════════════════════════════
 // FORMAT CONFIG
 // ═══════════════════════════════════════════════════════════
-
-export const FORMAT_HINTS = {
-  md: 'Template mode — model fills in a markdown template',
-  html: 'Suggested structure — HTML5 boilerplate with semantic tags',
-  json: 'Suggested schema — JSON boilerplate',
-  'json-strict': 'Strict schema — output must validate against the configured JSON schema or it will be rejected',
-  csv: 'Suggested format — comma-separated with header row'
-};
 
 const EXT_MAP = { md: 'md', html: 'html', json: 'json', 'json-strict': 'json', csv: 'csv' };
 
@@ -99,16 +92,16 @@ export function renderAIResponse(containerEl, rawText) {
       langSpan.className = 'detail-code-block-lang';
       // Tag <think> blocks as "AI Thoughts"
       const isThoughtBlock = (part.lang || '').toLowerCase() === 'thought' || (part.lang || '').toLowerCase() === 'thinking';
-      langSpan.textContent = isThoughtBlock ? 'AI Thoughts' : (part.lang || 'code');
+      langSpan.textContent = isThoughtBlock ? t('codeBlock.aiThoughts') : (part.lang || t('codeBlock.code'));
       header.appendChild(langSpan);
 
       const copyBtn = document.createElement('button');
       copyBtn.className = 'detail-code-block-copy';
-      copyBtn.textContent = 'Copy';
+      copyBtn.textContent = t('general.copy');
       copyBtn.addEventListener('click', () => {
         navigator.clipboard.writeText(part.content).then(() => {
-          copyBtn.textContent = 'Copied!';
-          setTimeout(() => { copyBtn.textContent = 'Copy'; }, 1500);
+          copyBtn.textContent = t('general.copied');
+          setTimeout(() => { copyBtn.textContent = t('general.copy'); }, 1500);
         });
       });
       header.appendChild(copyBtn);
@@ -155,7 +148,7 @@ export function renderMultiFileResponse(result, filesPerCall, callNum, opts) {
 
   responseText && responseText.classList.add('js-hidden');
   downloadBtn && downloadBtn.classList.add('js-hidden');
-  responseTitle && (responseTitle.textContent = 'Response (' + result.files.length + ' files)');
+  responseTitle && (responseTitle.textContent = t('pg.response') + ' (' + result.files.length + ' files)');
 
   if (callNum <= 1) {
     multiFiles.innerHTML = '';
@@ -174,7 +167,7 @@ export function renderMultiFileResponse(result, filesPerCall, callNum, opts) {
       card.innerHTML =
         '<div class="pg-file-card-header">' +
           '<span class="pg-file-card-name">' + escapeHtml(filename) + '</span>' +
-          '<button class="pg-file-card-download-btn" data-index="' + file.index + '">Download</button>' +
+          '<button class="pg-file-card-download-btn" data-index="' + file.index + '">' + t('general.download') + '</button>' +
         '</div>' +
         '<pre class="pg-file-card-content">' + escapeHtml(file.data) + '</pre>';
 
@@ -186,7 +179,7 @@ export function renderMultiFileResponse(result, filesPerCall, callNum, opts) {
         '<div class="pg-file-card-header">' +
           '<span class="pg-file-card-name pg-file-card-name-error">' + escapeHtml(filename) + '</span>' +
         '</div>' +
-        '<pre class="pg-file-card-content pg-file-card-content-error">' + escapeHtml(file.error || file.raw || 'Error') + '</pre>';
+        '<pre class="pg-file-card-content pg-file-card-content-error">' + escapeHtml(file.error || file.raw || t('general.error')) + '</pre>';
     }
 
     multiFiles.appendChild(card);
@@ -200,7 +193,7 @@ export function appendCallSeparator(multiFiles, callNum) {
   if (!multiFiles || callNum <= 1) return;
   const sep = document.createElement('div');
   sep.className = 'pg-call-separator';
-  sep.textContent = '── Call ' + callNum + ' ──';
+  sep.textContent = t('history.callSeparator', { n: callNum });
   multiFiles.appendChild(sep);
 }
 
@@ -210,7 +203,7 @@ export function appendCallSeparator(multiFiles, callNum) {
 
 export function showProgress(container, text, fill, current, total) {
   if (!container) return;
-  text && (text.textContent = 'Call ' + current + ' of ' + total + ' complete');
+  text && (text.textContent = t('pg.callOf', { n: current, total }));
   fill && (fill.style.width = ((current / total) * 100) + '%');
   container.classList.remove('js-hidden');
 }
@@ -241,7 +234,7 @@ export function createHistoryItem(item, onDetail) {
       '<span class="t-body t-weight-700 self-end ' + statusClass + '">' + statusIcon + '</span>' +
     '</div>' +
     '<div class="flex-row gap-lg" style="margin-top:0.5rem;font-size:0.75rem;color:var(--text-tertiary)">' +
-      '<span class="c-accent">' + (item.persona_id || 'Default') + '</span>' +
+      '<span class="c-accent">' + (item.persona_id || t('general.default')) + '</span>' +
       '<span class="t-caption-mono">' + item.latency + 'ms</span>' +
     '</div>' +
     '<p class="mt-md truncate c-secondary t-body">' + truncate(item.user_prompt, 80) + '</p>';
@@ -255,7 +248,7 @@ export function renderHistoryList(historyList, history, onDetail) {
   historyList.innerHTML = '';
 
   if (history.length === 0) {
-    historyList.innerHTML = '<p class="placeholder">No history yet. Run a prompt above!</p>';
+    historyList.innerHTML = '<p class="placeholder">' + t('pg.noHistory') + '</p>';
     return;
   }
 
@@ -276,7 +269,7 @@ export function renderHistoryList(historyList, history, onDetail) {
 
       const label = document.createElement('div');
       label.className = 'pg-batch-label t-micro c-tertiary';
-      label.textContent = '──── Batch Call ────';
+      label.textContent = t('history.batchCall');
       groupDiv.appendChild(label);
 
       batchItems.forEach(bi => {
@@ -287,7 +280,7 @@ export function renderHistoryList(historyList, history, onDetail) {
       i = j;
     } else {
       historyList.appendChild(createHistoryItem(item, onDetail));
-      i++;
+      i = i + 1;
     }
   }
 }
@@ -299,7 +292,7 @@ export function renderDetailView(item, detailContent, detailView, onDownload) {
   if (item.format) {
     formatSection =
       '<div class="flex-col gap-xs">' +
-        '<h3 class="label label-sm">Format</h3>' +
+        '<h3 class="label label-sm">' + t('history.format') + '</h3>' +
         '<p class="t-body c-primary"><span class="badge badge-caps badge-accent">' + escapeHtml(item.format) + '</span></p>' +
       '</div>';
 
@@ -312,35 +305,35 @@ export function renderDetailView(item, detailContent, detailView, onDownload) {
     }
     formatSection +=
       '<div class="flex-col gap-xs">' +
-        '<h3 class="label label-sm">Download Files</h3>' +
+        '<h3 class="label label-sm">' + t('history.downloadFiles') + '</h3>' +
         '<div class="flex-row gap-sm flex-wrap">' + downloadBtns + '</div>' +
       '</div>';
   }
 
   detailContent.innerHTML =
     '<div class="flex-col gap-xs">' +
-      '<h3 class="label label-sm">Timestamp</h3>' +
+      '<h3 class="label label-sm">' + t('history.timestamp') + '</h3>' +
       '<p class="t-body c-primary m-0">' + new Date(item.timestamp).toLocaleString() + '</p>' +
     '</div>' +
     '<div class="flex-col gap-xs">' +
-      '<h3 class="label label-sm">Persona</h3>' +
-      '<p class="t-body c-primary m-0">' + (item.persona_id || 'Default') + '</p>' +
+      '<h3 class="label label-sm">' + t('history.persona') + '</h3>' +
+      '<p class="t-body c-primary m-0">' + (item.persona_id || t('general.default')) + '</p>' +
     '</div>' +
     '<div class="flex-col gap-xs">' +
-      '<h3 class="label label-sm">Status</h3>' +
+      '<h3 class="label label-sm">' + t('history.status') + '</h3>' +
       '<p class="t-body c-primary m-0 ' + (item.status === 'success' ? 'c-success' : 'c-error') + '">' + item.status.toUpperCase() + '</p>' +
     '</div>' +
     '<div class="flex-col gap-xs">' +
-      '<h3 class="label label-sm">Latency</h3>' +
+      '<h3 class="label label-sm">' + t('history.latency') + '</h3>' +
       '<p class="t-body c-primary m-0">' + item.latency + 'ms</p>' +
     '</div>' +
     formatSection +
     '<div class="flex-col gap-xs">' +
-      '<h3 class="label label-sm">User Prompt</h3>' +
+      '<h3 class="label label-sm">' + t('history.userPrompt') + '</h3>' +
       '<div class="text-block text-block-prompt">' + escapeHtml(item.user_prompt) + '</div>' +
     '</div>' +
     '<div class="flex-col gap-xs">' +
-      '<h3 class="label label-sm">AI Response</h3>' +
+      '<h3 class="label label-sm">' + t('history.aiResponse') + '</h3>' +
       '<div class="text-block" id="detail-ai-response"></div>' +
     '</div>';
 

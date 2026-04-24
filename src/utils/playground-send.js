@@ -9,7 +9,6 @@ import {
   fetchPlaygroundHistory,
 } from './playground-api.js';
 import {
-  FORMAT_HINTS,
   downloadFormatFile,
   renderAIResponse,
   renderSingleResponse,
@@ -18,6 +17,8 @@ import {
   showProgress,
   hideProgress,
 } from './playground-dom.js';
+import { t } from '../i18n/index.js';
+
 // Playground no longer owns history — expose a no-op for compatibility
 function loadPlaygroundHistory() {
   if (window.loadHistoryList) window.loadHistoryList();
@@ -81,12 +82,12 @@ export async function handlePlaygroundSend() {
   const calls = (format && callsSelect) ? parseInt(callsSelect.value, 10) : 1;
 
   if (!prompt) {
-    showToast({ message: 'Please enter a prompt', variant: 'warning' });
+    showToast({ message: t('pg.pleaseEnterPrompt'), variant: 'warning' });
     return;
   }
 
   if (!proxy_id) {
-    showToast({ message: 'No proxy configured. Add one in Proxies tab.', variant: 'error' });
+    showToast({ message: t('pg.noProxyConfigured'), variant: 'error' });
     return;
   }
 
@@ -108,11 +109,11 @@ export async function handlePlaygroundSend() {
 
   // Update Run button
   if (calls > 1) {
-    sendBtn && (sendBtn.textContent = 'Cancel');
+    sendBtn && (sendBtn.textContent = t('pg.cancel'));
     sendBtn && (sendBtn.onclick = cancelBatch);
   } else {
     sendBtn && (sendBtn.disabled = true);
-    sendBtn && (sendBtn.textContent = 'Running...');
+    sendBtn && (sendBtn.textContent = t('pg.running'));
   }
 
   const responseOpts = { responseText, multiFiles, downloadBtn, responseTitle };
@@ -121,12 +122,12 @@ export async function handlePlaygroundSend() {
 
   for (let callNum = 1; callNum <= calls; callNum++) {
     if (pgState.batchCancelFlag) {
-      allErrors.push('Batch cancelled after call ' + (callNum - 1));
+      allErrors.push(t('pg.batchCancelled', { n: callNum - 1 }));
       break;
     }
 
     if (calls > 1) {
-      sendBtn && (sendBtn.textContent = 'Running ' + callNum + '/' + calls + '...');
+      sendBtn && (sendBtn.textContent = t('pg.runningCall', { n: callNum, total: calls }));
     }
 
     const payload = { prompt, persona_id, proxy_id };
@@ -154,7 +155,7 @@ export async function handlePlaygroundSend() {
           if (callNum > 1) {
             const sep = document.createElement('div');
             sep.className = 'pg-call-separator';
-            sep.textContent = '── Call ' + callNum + ' ──';
+            sep.textContent = t('history.callSeparator', { n: callNum });
             responseText && responseText.parentElement.insertBefore(sep, responseText.nextSibling);
           }
           responseText && renderAIResponse(responseText, result.data);
@@ -195,8 +196,8 @@ export async function handlePlaygroundSend() {
   // Update meta
   if (responseMeta) {
     responseMeta.textContent = calls > 1
-      ? 'Total latency: ' + totalLatency + 'ms (' + calls + ' calls)'
-      : 'Latency: ' + (totalLatency || '?') + 'ms';
+      ? t('pg.totalLatency', { ms: totalLatency, calls })
+      : t('pg.latency', { ms: totalLatency || '?' });
   }
 
   // Show errors if any (single call or all failed in batch)
@@ -214,7 +215,7 @@ export async function handlePlaygroundSend() {
 
   if (sendBtn) {
     sendBtn.disabled = false;
-    sendBtn.textContent = 'Run';
+    sendBtn.textContent = t('pg.run');
     sendBtn.onclick = handlePlaygroundSend;
   }
 
@@ -238,9 +239,15 @@ export function handleFormatChange() {
   const quantityControls = $('pg-quantity-controls');
 
   const value = formatSelect ? formatSelect.value : '';
-  if (value && FORMAT_HINTS[value]) {
-    formatInfoText.textContent = FORMAT_HINTS[value];
-    formatInfo.classList.remove('js-hidden');
+  if (value) {
+    const hint = t('pg.format.' + value);
+    // If no translation found, t() returns the key — use old fallback
+    formatInfoText.textContent = hint !== 'pg.format.' + value ? hint : '';
+    if (formatInfoText.textContent) {
+      formatInfo.classList.remove('js-hidden');
+    } else {
+      formatInfo.classList.add('js-hidden');
+    }
     quantityControls && quantityControls.classList.remove('js-hidden');
   } else {
     formatInfo.classList.add('js-hidden');

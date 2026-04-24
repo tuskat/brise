@@ -3,6 +3,8 @@
  * Returns parsed JSON; callers handle UI state.
  */
 
+import { t } from '../i18n/index.js';
+
 /**
  * GET /api/chat/conversations — list all conversations.
  */
@@ -34,7 +36,7 @@ export async function createConversation({ persona_id, proxy_id }) {
   const res = await fetch('/api/chat/conversations', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ title: 'New Conversation', persona_id, proxy_id })
+    body: JSON.stringify({ title: t('chat.newConversation'), persona_id, proxy_id })
   });
   const result = await res.json();
   if (!res.ok || result.status !== 'success') {
@@ -96,7 +98,7 @@ export async function loadDropdowns(personaSelect, proxySelect) {
     const res = await fetch('/api/personas');
     const data = await res.json();
     if (res.ok && Array.isArray(data) && personaSelect) {
-      personaSelect.innerHTML = '<option value="">Default</option>';
+      personaSelect.innerHTML = '<option value="">' + t('general.default') + '</option>';
       data.forEach(p => {
         const opt = document.createElement('option');
         opt.value = p.id;
@@ -110,7 +112,7 @@ export async function loadDropdowns(personaSelect, proxySelect) {
     const res = await fetch('/api/proxies');
     const data = await res.json();
     if (res.ok && Array.isArray(data) && proxySelect) {
-      proxySelect.innerHTML = '<option value="">Select proxy...</option>';
+      proxySelect.innerHTML = '<option value="">' + t('chat.proxy') + '...</option>';
       data.forEach(p => {
         const opt = document.createElement('option');
         opt.value = p.id;

@@ -4,6 +4,7 @@
  */
 
 import { formatTime, truncate, escapeHtml } from './helpers.js';
+import { t } from '../i18n/index.js';
 
 const showToast = () => window.showToast;
 
@@ -71,14 +72,14 @@ export async function loadMetrics() {
     if (refs.personaUsageChart) {
       const usage = m.personaUsage || [];
       if (usage.length === 0) {
-        refs.personaUsageChart.innerHTML = '<p class="c-tertiary t-caption text-center m-20">No data yet</p>';
+        refs.personaUsageChart.innerHTML = '<p class="c-tertiary t-caption text-center m-20">' + t('general.noData') + '</p>';
       } else {
         const maxCount = Math.max(...usage.map((u) => u.count), 1);
         refs.personaUsageChart.innerHTML = `
           <div class="chart-horizontal">
             ${usage.slice(0, 6).map((u) => {
               const width = Math.max((u.count / maxCount) * 100, 8);
-              const label = escapeHtml(u.persona_id || 'Default');
+              const label = escapeHtml(u.persona_id || t('general.default'));
               return `
                 <div class="chart-h-row">
                   <span class="t-caption c-secondary truncate t-weight-500 chart-h-label" title="${label}">${label}</span>
@@ -98,7 +99,7 @@ export async function loadMetrics() {
     if (refs.dailyUsageChart) {
       const daily = m.dailyUsage || [];
       if (daily.length === 0) {
-        refs.dailyUsageChart.innerHTML = '<p class="c-tertiary t-caption text-center m-20">No data yet</p>';
+        refs.dailyUsageChart.innerHTML = '<p class="c-tertiary t-caption text-center m-20">' + t('general.noData') + '</p>';
       } else {
         const maxCount = Math.max(...daily.map((d) => d.count), 1);
         const MAX_BAR_PX = 110;
@@ -107,8 +108,8 @@ export async function loadMetrics() {
             ${daily.map((d) => {
               const pxHeight = Math.max((d.count / maxCount) * MAX_BAR_PX, 4);
               const dateObj = new Date(d.date);
-              const dayName = dateObj.toLocaleDateString('en-US', { weekday: 'short' });
-              const dateStr = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+              const dayName = dateObj.toLocaleDateString(undefined, { weekday: 'short' });
+              const dateStr = dateObj.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
               return `
                 <div class="chart-bar">
                   <span class="t-caption t-weight-700 c-primary chart-bar-value">${d.count}</span>
@@ -136,7 +137,7 @@ export async function loadMetrics() {
             <div class="activity-item activity-item-clickable flex-row ${statusClass}" data-history-id="${item.id}">
               <span class="t-caption text-center flex-shrink-0 activity-status ${statusColor}">${statusIcon}</span>
               <span class="t-caption-mono c-tertiary flex-shrink-0 activity-time">${formatTime(item.timestamp)}</span>
-              <span class="t-caption t-weight-600 truncate flex-shrink-0 c-accent activity-persona">${escapeHtml(item.persona_id || 'Default')}</span>
+              <span class="t-caption t-weight-600 truncate flex-shrink-0 c-accent activity-persona">${escapeHtml(item.persona_id || t('general.default'))}</span>
               <span class="flex-grow truncate c-secondary t-body">${escapeHtml(truncate(item.user_prompt, 50))}</span>
               <span class="t-caption-mono c-tertiary text-right flex-shrink-0 activity-latency">${item.latency}ms</span>
             </div>
@@ -152,7 +153,7 @@ export async function loadMetrics() {
           });
         });
       } else {
-        refs.recentActivity.innerHTML = '<p class="c-tertiary t-caption text-center m-20">No recent activity</p>';
+        refs.recentActivity.innerHTML = '<p class="c-tertiary t-caption text-center m-20">' + t('dashboard.noRecentActivity') + '</p>';
       }
     }
 

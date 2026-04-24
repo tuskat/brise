@@ -1,79 +1,74 @@
----
----
 <div id="proxies-view" class="m-10 js-hidden">
   <div class="row-between flex-wrap gap-lg">
     <div>
-      <h2 class="t-hero">Proxy Backends</h2>
-      <p class="t-subtitle">Configure LLM backends for routing requests</p>
+      <h2 class="t-hero" data-i18n="proxies.title"></h2>
+      <p class="t-subtitle" data-i18n="proxies.subtitle"></p>
     </div>
-    <button id="new-proxy-btn" class="btn btn-primary">+ Add Proxy</button>
+    <button id="new-proxy-btn" class="btn btn-primary" data-i18n="proxies.addProxy"></button>
   </div>
 
   <div id="proxies-list" class="flex-col gap-md mt-lg">
-    <p class="placeholder">Loading proxies...</p>
+    <p class="placeholder" data-i18n="proxies.loading"></p>
   </div>
-</div>
 
- <!-- Create / Edit Modal -->
+  <!-- Proxy Form Modal -->
   <div id="proxy-form-modal" class="modal">
     <div class="modal-card">
       <div class="row-between mb-md">
-        <h2 id="proxy-form-title" class="t-section-title">New Proxy</h2>
-        <button id="proxy-form-close" class="modal-close" aria-label="Close">&times;</button>
+        <h2 id="proxy-form-title" class="t-section-title" data-i18n="proxies.form.newTitle"></h2>
+        <button id="proxy-form-close" class="modal-close" data-i18n-aria="general.close">&times;</button>
       </div>
       <form id="proxy-form" class="flex-col gap-md">
         <div class="flex-col gap-xs">
-          <label for="px-name" class="label">Name</label>
-          <input id="px-name" type="text" class="input" placeholder="e.g. Ollama Local" required />
+          <label for="px-name" class="label" data-i18n="proxies.form.name"></label>
+          <input id="px-name" type="text" class="input" data-i18n-placeholder="proxies.form.namePlaceholder" required />
         </div>
         <div class="flex-col gap-xs">
-          <label for="px-url" class="label">URL</label>
-          <input id="px-url" type="text" class="input" placeholder="http://192.168.1.100:11434/api/generate" required />
-          <span id="px-url-hint" class="t-caption c-tertiary">Full URL to the LLM API endpoint</span>
+          <label for="px-url" class="label" data-i18n="proxies.form.url"></label>
+          <input id="px-url" type="text" class="input" data-i18n-placeholder="proxies.form.urlPlaceholder" required />
+          <span id="px-url-hint" class="t-caption c-tertiary" data-i18n="proxies.form.urlHintOllama"></span>
         </div>
         <div class="flex-col gap-xs">
-          <label for="px-schema" class="label">API Schema</label>
+          <label for="px-schema" class="label" data-i18n="proxies.form.apiSchema"></label>
           <select id="px-schema" class="input input-select">
-            <option value="ollama">Ollama (Native)</option>
-            <option value="openai">OpenAI-Compatible</option>
+            <option value="ollama" data-i18n="proxies.form.schemaOllama"></option>
+            <option value="openai" data-i18n="proxies.form.schemaOpenai"></option>
           </select>
-          <span class="t-caption c-tertiary">Ollama for local; OpenAI-compatible for Groq, LM Studio, etc.</span>
+          <span class="t-caption c-tertiary" data-i18n="proxies.form.schemaHint"></span>
         </div>
         <div class="flex-col gap-xs">
-          <label for="px-model" class="label">Model</label>
-          <input id="px-model" type="text" class="input" placeholder="your-model" required />
-          <span class="t-caption c-tertiary">Default model to use with this proxy</span>
+          <label for="px-model" class="label" data-i18n="proxies.form.model"></label>
+          <input id="px-model" type="text" class="input" data-i18n-placeholder="proxies.form.modelPlaceholder" required />
+          <span class="t-caption c-tertiary" data-i18n="proxies.form.modelHint"></span>
         </div>
         <div class="flex-col gap-sm">
           <label class="flex-row gap-sm t-body c-primary cursor-pointer">
             <input id="px-local" type="checkbox" checked />
-            <span>Local Network (no API key required)</span>
+            <span data-i18n="proxies.form.isLocal"></span>
           </label>
-          <span class="t-caption c-tertiary">Enable for local Ollama instances. Disable for cloud providers like OpenAI.</span>
+          <span class="t-caption c-tertiary" data-i18n="proxies.form.localHint"></span>
         </div>
         <div id="api-key-field" class="flex-col gap-xs js-hidden">
-          <label for="px-apikey" class="label">API Key</label>
-          <input id="px-apikey" type="password" class="input" placeholder="sk-..." />
-          <span class="t-caption c-warning">⚠️ API keys stored in plaintext. Do not expose this app to the internet.</span>
+          <label for="px-apikey" class="label" data-i18n="proxies.form.apiKey"></label>
+          <input id="px-apikey" type="password" class="input" data-i18n-placeholder="proxies.form.apiKeyPlaceholder" />
+          <span class="t-caption c-warning" data-i18n="proxies.form.apiKeyWarning"></span>
         </div>
         <div class="flex-row gap-sm flex-wrap">
-          <button type="submit" class="btn btn-primary" id="proxy-form-submit">Create Proxy</button>
-          <button type="button" class="btn btn-secondary" id="proxy-form-cancel">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="proxy-form-submit" data-i18n="proxies.form.createBtn"></button>
+          <button type="button" class="btn btn-secondary" id="proxy-form-cancel" data-i18n="general.cancel"></button>
+          <button type="button" class="btn btn-secondary" id="test-proxy-btn" data-i18n="proxies.form.testConnection"></button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- Delete Confirmation Modal -->
   <div id="proxy-delete-modal" class="modal">
     <div class="modal-card modal-card-sm">
-      <h2 class="t-section-title">Delete Proxy</h2>
-      <p class="t-body c-secondary" style="margin:0.75rem 0 0">
-        Are you sure you want to delete <strong id="delete-proxy-name"></strong>? This cannot be undone.
-      </p>
+      <h2 class="t-section-title" data-i18n="proxies.delete.title"></h2>
+      <p id="proxy-delete-confirm-text" class="t-body c-secondary" style="margin:0.75rem 0 0"></p>
       <div class="flex-row gap-sm self-end mt-sm flex-wrap">
-        <button id="confirm-proxy-delete-btn" class="btn btn-danger-fill">Delete</button>
-        <button id="cancel-proxy-delete-btn" class="btn btn-secondary">Cancel</button>
+        <button id="confirm-proxy-delete-btn" class="btn btn-danger-fill" data-i18n="general.delete"></button>
+        <button id="cancel-proxy-delete-btn" class="btn btn-secondary" data-i18n="general.cancel"></button>
       </div>
     </div>
   </div>

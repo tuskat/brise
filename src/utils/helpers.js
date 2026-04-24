@@ -3,6 +3,8 @@
  * No DOM dependencies — pure functions only.
  */
 
+import { t } from '../i18n/index.js';
+
 /**
  * HTML-escape a string for safe insertion via innerHTML.
  */
@@ -36,9 +38,9 @@ export function formatTime(timestamp) {
   const date = new Date(timestamp.replace(' ', 'T'));
   if (isNaN(date.getTime())) return '';
   const diff = Date.now() - date.getTime();
-  if (diff < 60_000)  return 'Just now';
-  if (diff < 3_600_000)  return Math.floor(diff / 60_000) + 'm ago';       // < 1h
-  if (diff < 86_400_000) return Math.floor(diff / 3_600_000) + 'h ago';     // < 24h
-  if (diff < 604_800_000) return Math.floor(diff / 86_400_000) + 'd ago';    // < 7d
+  if (diff < 60_000)  return t('time.justNow');
+  if (diff < 3_600_000)  return t('time.minutesAgo', { n: Math.floor(diff / 60_000) });
+  if (diff < 86_400_000) return t('time.hoursAgo', { n: Math.floor(diff / 3_600_000) });
+  if (diff < 604_800_000) return t('time.daysAgo', { n: Math.floor(diff / 86_400_000) });
   return date.toLocaleDateString();
 }

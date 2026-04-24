@@ -5,6 +5,7 @@
  */
 
 import { escapeHtml, formatTime } from './helpers.js';
+import { t } from '../i18n/index.js';
 
 const showToast = () => window.showToast;
 
@@ -53,7 +54,7 @@ function getRefs() {
 export async function loadProxiesList() {
   const { proxiesList } = getRefs();
   if (!proxiesList) return;
-  proxiesList.innerHTML = '<p class="placeholder">Loading proxies...</p>';
+  proxiesList.innerHTML = '<p class="placeholder">' + t('proxies.loading') + '</p>';
 
   try {
     const response = await fetch('/api/proxies');
@@ -66,7 +67,7 @@ export async function loadProxiesList() {
     proxies = data;
 
     if (proxies.length === 0) {
-      proxiesList.innerHTML = '<p class="placeholder">No proxies configured. Add one to get started.</p>';
+      proxiesList.innerHTML = '<p class="placeholder">' + t('proxies.noneYet') + '</p>';
       return;
     }
 
@@ -77,14 +78,14 @@ export async function loadProxiesList() {
       card.dataset.proxyId = p.id;
 
       const localBadge = p.is_local_network
-        ? '<span class="badge badge-caps badge-local">Local</span>'
-        : '<span class="badge badge-caps badge-remote">Remote</span>';
+        ? '<span class="badge badge-caps badge-local">' + t('proxies.local') + '</span>'
+        : '<span class="badge badge-caps badge-remote">' + t('proxies.remote') + '</span>';
 
       card.innerHTML = `
         <div class="row-between" style="margin-bottom:0.75rem">
           <div class="flex-row gap-sm t-caption t-weight-600" id="status-${escapeHtml(p.id)}">
             <span class="status-dot status-dot-unknown"></span>
-            <span class="status-text">Checking...</span>
+            <span class="status-text">${t('proxies.status.checking')}</span>
           </div>
           ${localBadge}
         </div>
@@ -93,21 +94,21 @@ export async function loadProxiesList() {
           <p class="t-caption-mono c-tertiary" style="margin:0 0 0.5rem">${escapeHtml(p.url)}</p>
           <div class="flex-row flex-wrap gap-sm" style="font-size:0.75rem;color:var(--text-tertiary)">
             <span class="badge badge-caps badge-accent">${escapeHtml(p.model)}</span>
-            ${p.last_used ? `<span>• Last used: ${formatTime(p.last_used)}</span>` : ''}
+            ${p.last_used ? `<span>• ${t('proxies.lastUsed')}: ${formatTime(p.last_used)}</span>` : ''}
           </div>
         </div>
         <div class="flex-row gap-sm mt-md pt-md border-t">
-          <button class="btn btn-secondary" data-id="${escapeHtml(p.id)}">Test</button>
-          <button class="btn btn-primary" data-id="${escapeHtml(p.id)}">Edit</button>
-          <button class="btn btn-danger" data-id="${escapeHtml(p.id)}" data-name="${escapeHtml(p.name)}">Delete</button>
+          <button class="btn btn-secondary" data-id="${escapeHtml(p.id)}">${t('general.test')}</button>
+          <button class="btn btn-primary" data-id="${escapeHtml(p.id)}">${t('general.edit')}</button>
+          <button class="btn btn-danger" data-id="${escapeHtml(p.id)}" data-name="${escapeHtml(p.name)}">${t('general.delete')}</button>
         </div>
       `;
 
       const buttons = card.querySelectorAll('button');
       buttons.forEach(btn => {
-        if (btn.textContent === 'Test') btn.addEventListener('click', () => testProxyById(btn.dataset.id || ''));
-        if (btn.textContent === 'Edit') btn.addEventListener('click', () => openEditProxyModal(btn.dataset.id || ''));
-        if (btn.textContent === 'Delete') btn.addEventListener('click', () => openDeleteProxyModal(btn.dataset.name || '', btn.dataset.id || ''));
+        if (btn.textContent === t('general.test')) btn.addEventListener('click', () => testProxyById(btn.dataset.id || ''));
+        if (btn.textContent === t('general.edit')) btn.addEventListener('click', () => openEditProxyModal(btn.dataset.id || ''));
+        if (btn.textContent === t('general.delete')) btn.addEventListener('click', () => openDeleteProxyModal(btn.dataset.name || '', btn.dataset.id || ''));
       });
 
       proxiesList.appendChild(card);
@@ -116,7 +117,7 @@ export async function loadProxiesList() {
     // Check status of all proxies after rendering
     setTimeout(() => checkAllProxyStatuses(), 100);
   } catch (err) {
-    proxiesList.innerHTML = `<p class="placeholder">Error: ${escapeHtml(err.message)}</p>`;
+    proxiesList.innerHTML = `<p class="placeholder">${t('general.error')}: ${escapeHtml(err.message)}</p>`;
   }
 }
 
@@ -147,12 +148,12 @@ async function checkAllProxyStatuses() {
         if (result.success) {
           statusEl.innerHTML = `
             <span class="status-dot status-dot-online"></span>
-            <span class="status-text c-success">Online</span>
+            <span class="status-text c-success">${t('proxies.status.online')}</span>
           `;
         } else {
           statusEl.innerHTML = `
             <span class="status-dot status-dot-offline"></span>
-            <span class="status-text c-error">Offline</span>
+            <span class="status-text c-error">${t('proxies.status.offline')}</span>
           `;
         }
       }
@@ -161,7 +162,7 @@ async function checkAllProxyStatuses() {
       if (statusEl) {
         statusEl.innerHTML = `
           <span class="status-dot status-dot-offline"></span>
-          <span class="status-text c-error">Offline</span>
+          <span class="status-text c-error">${t('proxies.status.offline')}</span>
         `;
       }
     }
@@ -173,7 +174,7 @@ async function checkAllProxyStatuses() {
 // ═══════════════════════════════════════════════════════════
 
 async function testProxyById(id) {
-  showToast()?.({ message: 'Testing connection...', variant: 'info' });
+  showToast()?.({ message: t('proxies.status.testing'), variant: 'info' });
 
   try {
     const response = await fetch('/api/proxies/test', {
@@ -185,12 +186,12 @@ async function testProxyById(id) {
     const result = await response.json();
 
     if (result.success) {
-      showToast()?.({ message: `Connection successful (${result.latency}ms)`, variant: 'success' });
+      showToast()?.({ message: t('proxies.status.success', { ms: result.latency }), variant: 'success' });
     } else {
-      showToast()?.({ message: `Connection failed: ${result.error}`, variant: 'error' });
+      showToast()?.({ message: t('proxies.status.failed', { error: result.error }), variant: 'error' });
     }
   } catch (err) {
-    showToast()?.({ message: `Test failed: ${err.message}`, variant: 'error' });
+    showToast()?.({ message: t('proxies.status.testFailed', { error: err.message }), variant: 'error' });
   }
 }
 
@@ -207,12 +208,12 @@ async function testProxyForm() {
   const api_schema = refs.apiSchemaSelect?.value || 'ollama';
 
   if (!url || !model) {
-    showToast()?.({ message: 'URL and Model are required for testing', variant: 'warning' });
+    showToast()?.({ message: t('proxies.form.testRequired'), variant: 'warning' });
     return;
   }
 
   refs.testProxyBtn.disabled = true;
-  refs.testProxyBtn.textContent = 'Testing...';
+  refs.testProxyBtn.textContent = t('proxies.form.testing');
 
   try {
     const response = await fetch('/api/proxies/test', {
@@ -224,15 +225,15 @@ async function testProxyForm() {
     const result = await response.json();
 
     if (result.success) {
-      showToast()?.({ message: `Connection successful (${result.latency}ms)`, variant: 'success' });
+      showToast()?.({ message: t('proxies.status.success', { ms: result.latency }), variant: 'success' });
     } else {
-      showToast()?.({ message: `Connection failed: ${result.error}`, variant: 'error' });
+      showToast()?.({ message: t('proxies.status.failed', { error: result.error }), variant: 'error' });
     }
   } catch (err) {
-    showToast()?.({ message: `Test failed: ${err.message}`, variant: 'error' });
+    showToast()?.({ message: t('proxies.status.testFailed', { error: err.message }), variant: 'error' });
   } finally {
     refs.testProxyBtn.disabled = false;
-    refs.testProxyBtn.textContent = 'Test Connection';
+    refs.testProxyBtn.textContent = t('proxies.form.testConnection');
   }
 }
 
@@ -247,8 +248,8 @@ function openNewProxyModal() {
   refs.proxyForm?.reset();
   if (refs.localCheckbox) refs.localCheckbox.checked = true;
   if (refs.apiKeyField) refs.apiKeyField.classList.add('js-hidden');
-  if (refs.proxyFormTitle) refs.proxyFormTitle.textContent = 'New Proxy';
-  if (refs.proxyFormSubmit) refs.proxyFormSubmit.textContent = 'Create Proxy';
+  if (refs.proxyFormTitle) refs.proxyFormTitle.textContent = t('proxies.form.newTitle');
+  if (refs.proxyFormSubmit) refs.proxyFormSubmit.textContent = t('proxies.form.createBtn');
   if (refs.apiSchemaSelect) {
     refs.apiSchemaSelect.value = 'ollama';
     refs.apiSchemaSelect.dispatchEvent(new Event('change'));
@@ -278,22 +279,26 @@ function openEditProxyModal(id) {
   }
   if (apiKeyInput) {
     apiKeyInput.value = '';
-    apiKeyInput.placeholder = proxy.api_key ? 'Leave blank to keep existing key' : 'Enter API key';
+    apiKeyInput.placeholder = proxy.api_key ? t('proxies.form.apiKeyEditPlaceholder') : t('proxies.form.apiKeyPlaceholder');
   }
   if (refs.apiSchemaSelect) {
     refs.apiSchemaSelect.value = proxy.api_schema || 'ollama';
     refs.apiSchemaSelect.dispatchEvent(new Event('change'));
   }
 
-  if (refs.proxyFormTitle)  refs.proxyFormTitle.textContent = 'Edit Proxy';
-  if (refs.proxyFormSubmit) refs.proxyFormSubmit.textContent = 'Save Changes';
+  if (refs.proxyFormTitle)  refs.proxyFormTitle.textContent = t('proxies.form.editTitle');
+  if (refs.proxyFormSubmit) refs.proxyFormSubmit.textContent = t('proxies.form.saveBtn');
   refs.proxyFormModal?.classList.add('js-open');
 }
 
 function openDeleteProxyModal(name, id) {
   const refs = getRefs();
   deletingProxyId = id;
-  if (refs.deleteProxyName) refs.deleteProxyName.textContent = name;
+  // Set the delete confirmation text with the name interpolated
+  const confirmText = document.getElementById('proxy-delete-confirm-text');
+  if (confirmText) {
+    confirmText.innerHTML = t('proxies.delete.confirm', { name: '<strong id="delete-proxy-name">' + escapeHtml(name) + '</strong>' });
+  }
   refs.proxyDeleteModal?.classList.add('js-open');
 }
 
@@ -317,7 +322,7 @@ async function handleProxyFormSubmit(e) {
   const api_schema       = refs.apiSchemaSelect?.value || 'ollama';
 
   if (!name || !url || !model) {
-    showToast()?.({ message: 'Name, URL, and Model are required', variant: 'warning' });
+    showToast()?.({ message: t('proxies.form.required'), variant: 'warning' });
     return;
   }
 
@@ -346,11 +351,11 @@ async function handleProxyFormSubmit(e) {
     const result = await response.json();
 
     if (!response.ok) {
-      showToast()?.({ message: result.error || 'Failed to save proxy', variant: 'error' });
+      showToast()?.({ message: result.error || t('proxies.form.saveFailed'), variant: 'error' });
       return;
     }
 
-    showToast()?.({ message: editingProxyId ? 'Proxy updated' : 'Proxy created', variant: 'success' });
+    showToast()?.({ message: editingProxyId ? t('proxies.form.updated') : t('proxies.form.created'), variant: 'success' });
     refs.proxyFormModal?.classList.remove('js-open');
     loadProxiesList();
     if (window.loadChatDropdowns) window.loadChatDropdowns();
@@ -372,11 +377,11 @@ async function handleProxyDelete() {
     const result = await response.json();
 
     if (!response.ok) {
-      showToast()?.({ message: result.error || 'Failed to delete proxy', variant: 'error' });
+      showToast()?.({ message: result.error || t('proxies.delete.failed'), variant: 'error' });
       return;
     }
 
-    showToast()?.({ message: 'Proxy deleted', variant: 'success' });
+    showToast()?.({ message: t('proxies.delete.success'), variant: 'success' });
     const { proxyDeleteModal } = getRefs();
     proxyDeleteModal?.classList.remove('js-open');
     loadProxiesList();
@@ -415,9 +420,9 @@ export function initProxiesEvents() {
   refs.apiSchemaSelect?.addEventListener('change', () => {
     if (refs.urlHint) {
       if (refs.apiSchemaSelect.value === 'openai') {
-        refs.urlHint.textContent = 'Base URL (e.g., https://api.groq.com/openai/v1) - /v1/chat/completions will be appended';
+        refs.urlHint.textContent = t('proxies.form.urlHintOpenai');
       } else {
-        refs.urlHint.textContent = 'Full URL to the LLM API endpoint (e.g., http://192.168.1.100:11434/api/generate)';
+        refs.urlHint.textContent = t('proxies.form.urlHintOllama');
       }
     }
   });

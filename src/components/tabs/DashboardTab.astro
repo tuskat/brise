@@ -1,52 +1,49 @@
----
----
-
 <div id="dashboard-view" class="m-10 js-hidden">
   <div class="row-between flex-wrap gap-lg">
     <div>
-      <h2 class="t-hero">Dashboard</h2>
-      <p class="t-subtitle">Overview of your LLM usage and performance</p>
+      <h2 class="t-hero" data-i18n="dashboard.title"></h2>
+      <p class="t-subtitle" data-i18n="dashboard.subtitle"></p>
     </div>
   </div>
 
   <!-- Summary Cards -->
   <div class="dashboard-grid">
     <div class="card card-hover stat-card flex-col gap-xs">
-      <span class="label label-sm">Total Requests</span>
+      <span class="label label-sm" data-i18n="dashboard.totalRequests"></span>
       <div class="flex-row gap-xs items-baseline">
         <span id="metric-total" class="stat-value">—</span>
       </div>
     </div>
     <div class="card card-hover stat-card flex-col gap-xs">
-      <span class="label label-sm">Success Rate</span>
+      <span class="label label-sm" data-i18n="dashboard.successRate"></span>
       <div class="flex-row gap-xs items-baseline">
         <span id="metric-success-rate" class="stat-value">—</span>
         <span class="t-caption c-tertiary t-weight-500">%</span>
       </div>
     </div>
     <div class="card card-hover stat-card flex-col gap-xs">
-      <span class="label label-sm">Avg Latency</span>
+      <span class="label label-sm" data-i18n="dashboard.avgLatency"></span>
       <div class="flex-row gap-xs items-baseline">
         <span id="metric-avg-latency" class="stat-value">—</span>
         <span class="t-caption c-tertiary t-weight-500">ms</span>
       </div>
     </div>
     <div class="card card-hover stat-card flex-col gap-xs">
-      <span class="label label-sm">Recent Avg</span>
+      <span class="label label-sm" data-i18n="dashboard.recentAvg"></span>
       <div class="flex-row gap-xs items-baseline">
         <span id="metric-recent-latency" class="stat-value">—</span>
         <span class="t-caption c-tertiary t-weight-500">ms</span>
       </div>
     </div>
     <div class="card card-hover stat-card flex-col gap-xs">
-      <span class="label label-sm">Min Latency</span>
+      <span class="label label-sm" data-i18n="dashboard.minLatency"></span>
       <div class="flex-row gap-xs items-baseline">
         <span id="metric-min-latency" class="stat-value">—</span>
         <span class="t-caption c-tertiary t-weight-500">ms</span>
       </div>
     </div>
     <div class="card card-hover stat-card flex-col gap-xs">
-      <span class="label label-sm">Max Latency</span>
+      <span class="label label-sm" data-i18n="dashboard.maxLatency"></span>
       <div class="flex-row gap-xs items-baseline">
         <span id="metric-max-latency" class="stat-value">—</span>
         <span class="t-caption c-tertiary t-weight-500">ms</span>
@@ -57,24 +54,24 @@
   <!-- Charts Row -->
   <div class="dashboard-charts">
     <div class="mt-lg">
-      <h3 class="label">Persona Usage</h3>
+      <h3 class="label" data-i18n="dashboard.personaUsage"></h3>
       <div id="persona-usage-chart" class="card dashboard-chart-area">
-        <p class="c-tertiary t-caption text-center m-20">No data yet</p>
+        <p class="c-tertiary t-caption text-center m-20" data-i18n="general.noData"></p>
       </div>
     </div>
     <div class="mt-lg">
-      <h3 class="label">Daily Activity (Last 7 Days)</h3>
+      <h3 class="label" data-i18n="dashboard.dailyActivity"></h3>
       <div id="daily-usage-chart" class="card dashboard-chart-area">
-        <p class="c-tertiary t-caption text-center m-20">No data yet</p>
+        <p class="c-tertiary t-caption text-center m-20" data-i18n="general.noData"></p>
       </div>
     </div>
   </div>
 
   <!-- Recent Activity -->
   <div class="dashboard-section-full mt-lg">
-    <h3 class="label">Recent Activity</h3>
+    <h3 class="label" data-i18n="dashboard.recentActivity"></h3>
     <div id="recent-activity" class="card dashboard-activity-list p-0">
-      <p class="c-tertiary t-caption text-center m-20">No activity yet</p>
+      <p class="c-tertiary t-caption text-center m-20" data-i18n="dashboard.noRecentActivity"></p>
     </div>
   </div>
 </div>

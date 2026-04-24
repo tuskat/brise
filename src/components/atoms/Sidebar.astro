@@ -1,11 +1,8 @@
----
----
-
 <aside class="sidebar" id="sidebar">
   <div class="sidebar-brand">
     <span class="sidebar-logo">◈</span>
-    <span class="sidebar-title">Brise</span>
-    <button id="sidebar-toggle" class="sidebar-toggle" aria-label="Toggle sidebar" title="Toggle sidebar">
+    <span class="sidebar-title" data-i18n="general.brise"></span>
+    <button id="sidebar-toggle" class="sidebar-toggle" data-i18n-aria="sidebar.toggleSidebar" data-i18n-title="sidebar.toggleSidebar">
       <svg class="sidebar-toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <line x1="3" y1="6" x2="21" y2="6"/>
         <line x1="3" y1="12" x2="21" y2="12"/>
@@ -16,11 +13,11 @@
   
   <!-- Mobile-only collapse link above nav -->
   <div class="sidebar-mobile-close" id="mobile-close-btn">
-    <button class="sidebar-link mobile-collapse-link" aria-label="Close menu" title="Close menu">
+    <button class="sidebar-link mobile-collapse-link" data-i18n-aria="sidebar.closeMenu" data-i18n-title="sidebar.closeMenu">
       <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <polyline points="15 18 9 12 15 6"/>
       </svg>
-      <span>Collapse</span>
+      <span data-i18n="sidebar.collapse"></span>
     </button>
   </div>
   <hr class="sidebar-mobile-separator">
@@ -33,14 +30,14 @@
         <rect x="3" y="14" width="7" height="7" rx="1"/>
         <rect x="14" y="14" width="7" height="7" rx="1"/>
       </svg>
-      <span>Dashboard</span>
+      <span data-i18n="sidebar.dashboard"></span>
     </a>
     
     <a href="#" data-tab="chat" class="sidebar-link">
       <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
       </svg>
-      <span>Chat</span>
+      <span data-i18n="sidebar.chat"></span>
     </a>
     
     <a href="#" data-tab="playground" class="sidebar-link">
@@ -48,7 +45,7 @@
         <path d="M6 20V10M6 10a6 6 0 0 0 12 0v10"/>
         <path d="M18 20V14M18 14a6 6 0 0 1-12 0"/>
       </svg>
-      <span>Playground</span>
+      <span data-i18n="sidebar.playground"></span>
     </a>
     
     <a href="#" data-tab="history" class="sidebar-link">
@@ -56,7 +53,7 @@
         <circle cx="12" cy="12" r="10"/>
         <polyline points="12 6 12 12 16 14"/>
       </svg>
-      <span>History</span>
+      <span data-i18n="sidebar.history"></span>
     </a>
     
     <a href="#" data-tab="personas" class="sidebar-link">
@@ -64,33 +61,19 @@
         <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
         <circle cx="12" cy="7" r="4"/>
       </svg>
-      <span>Personas</span>
+      <span data-i18n="sidebar.personas"></span>
     </a>
     
     <a href="#" data-tab="proxies" class="sidebar-link">
       <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
       </svg>
-      <span>Proxies</span>
+      <span data-i18n="sidebar.proxies"></span>
     </a>
   </nav>
 
-  <script is:inline>
-    (function() {
-      var savedTab = localStorage.getItem('brise_active_tab');
-      var nav = document.getElementById('sidebar-nav');
-      if (nav && savedTab) {
-        var link = nav.querySelector('[data-tab="' + savedTab + '"]');
-        if (link) link.classList.add('js-sidebar-link-active');
-      } else if (nav) {
-        var defaultLink = nav.querySelector('[data-tab="dashboard"]');
-        if (defaultLink) defaultLink.classList.add('js-sidebar-link-active');
-      }
-    })();
-  </script>
-  
   <div class="sidebar-footer">
-    <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">
+    <button id="theme-toggle" class="theme-toggle" data-i18n-aria="sidebar.toggleTheme">
       <svg class="theme-toggle-icon theme-toggle-icon-dark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
       </svg>
@@ -107,6 +90,10 @@
       </svg>
     </button>
     <span class="sidebar-version">v0.2.0</span>
+    <select id="locale-select" class="locale-select" aria-label="Language">
+      <option value="en">EN</option>
+      <option value="fr">FR</option>
+    </select>
   </div>
 </aside>
 

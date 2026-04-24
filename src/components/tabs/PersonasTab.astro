@@ -1,59 +1,55 @@
----
----
 <div id="personas-view" class="m-10 js-hidden">
   <div class="row-between flex-wrap gap-lg">
     <div>
-      <h2 class="t-hero">Personas</h2>
-      <p class="t-subtitle">Configure AI behaviors and system prompts</p>
+      <h2 class="t-hero" data-i18n="personas.title"></h2>
+      <p class="t-subtitle" data-i18n="personas.subtitle"></p>
     </div>
-    <button id="new-persona-btn" class="btn btn-primary">+ New Persona</button>
+    <button id="new-persona-btn" class="btn btn-primary" data-i18n="personas.newPersona"></button>
   </div>
 
   <div id="personas-list" class="flex-col gap-md mt-lg">
-    <p class="placeholder">Loading personas...</p>
+    <p class="placeholder" data-i18n="personas.loading"></p>
   </div>
-
- 
 </div>
 
  <!-- Create / Edit Modal -->
   <div id="persona-form-modal" class="modal">
     <div class="modal-card">
       <div class="row-between mb-md">
-        <h2 id="persona-form-title" class="t-section-title">New Persona</h2>
-        <button id="persona-form-close" class="modal-close" aria-label="Close">&times;</button>
+        <h2 id="persona-form-title" class="t-section-title" data-i18n="personas.form.newTitle"></h2>
+        <button id="persona-form-close" class="modal-close" data-i18n-aria="general.close">&times;</button>
       </div>
       <form id="persona-form" class="flex-col gap-md">
         <div class="flex-col gap-xs">
-          <label for="pf-id" class="label">ID</label>
-          <input id="pf-id" type="text" class="input" placeholder="e.g. code-reviewer" pattern="[a-z0-9-]+" />
-          <span class="t-caption c-tertiary">Lowercase letters, numbers, hyphens. Cannot be changed after creation.</span>
+          <label for="pf-id" class="label" data-i18n="personas.form.id"></label>
+          <input id="pf-id" type="text" class="input" data-i18n-placeholder="personas.form.idPlaceholder" pattern="[a-z0-9-]+" />
+          <span class="t-caption c-tertiary" data-i18n="personas.form.idHint"></span>
         </div>
         <div class="flex-col gap-xs">
-          <label for="pf-name" class="label">Name</label>
-          <input id="pf-name" type="text" class="input" placeholder="e.g. Code Reviewer" required />
+          <label for="pf-name" class="label" data-i18n="personas.form.name"></label>
+          <input id="pf-name" type="text" class="input" data-i18n-placeholder="personas.form.namePlaceholder" required />
         </div>
         <div class="flex-col gap-xs">
-          <label for="pf-prompt" class="label">System Prompt</label>
-          <textarea id="pf-prompt" rows="5" class="input input-textarea" placeholder="Define the persona's behavior..." required></textarea>
+          <label for="pf-prompt" class="label" data-i18n="personas.form.systemPrompt"></label>
+          <textarea id="pf-prompt" rows="5" class="input input-textarea" data-i18n-placeholder="personas.form.promptPlaceholder" required></textarea>
         </div>
         <div class="flex-row gap-md">
           <div class="flex-col gap-xs flex-1">
-            <label for="pf-temp" class="label">Temperature</label>
+            <label for="pf-temp" class="label" data-i18n="personas.form.temperature"></label>
             <input id="pf-temp" type="number" class="input" min="0" max="2" step="0.1" value="0.7" />
           </div>
           <div class="flex-col gap-xs flex-1">
-            <label for="pf-topp" class="label">Top P</label>
+            <label for="pf-topp" class="label" data-i18n="personas.form.topP"></label>
             <input id="pf-topp" type="number" class="input" min="0" max="1" step="0.05" value="0.9" />
           </div>
           <div class="flex-col gap-xs flex-1">
-            <label for="pf-maxtokens" class="label">Max Tokens</label>
+            <label for="pf-maxtokens" class="label" data-i18n="personas.form.maxTokens"></label>
             <input id="pf-maxtokens" type="number" class="input" min="100" max="8000" step="100" value="2000" />
           </div>
         </div>
         <div class="flex-row gap-sm self-end mt-sm flex-wrap">
-          <button type="submit" class="btn btn-primary" id="persona-form-submit">Create Persona</button>
-          <button type="button" class="btn btn-secondary" id="persona-form-cancel">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="persona-form-submit" data-i18n="personas.form.createBtn"></button>
+          <button type="button" class="btn btn-secondary" id="persona-form-cancel" data-i18n="general.cancel"></button>
         </div>
       </form>
     </div>
@@ -62,13 +58,11 @@
   <!-- Delete Confirmation Modal -->
   <div id="persona-delete-modal" class="modal">
     <div class="modal-card modal-card-sm">
-      <h2 class="t-section-title">Delete Persona</h2>
-      <p class="t-body c-secondary" style="margin:0.75rem 0 0">
-        Are you sure you want to delete <strong id="delete-persona-name"></strong>? This cannot be undone.
-      </p>
+      <h2 class="t-section-title" data-i18n="personas.delete.title"></h2>
+      <p id="persona-delete-confirm-text" class="t-body c-secondary" style="margin:0.75rem 0 0"></p>
       <div class="flex-row gap-sm self-end mt-sm flex-wrap">
-        <button id="confirm-delete-btn" class="btn btn-danger-fill">Delete</button>
-        <button id="cancel-delete-btn" class="btn btn-secondary">Cancel</button>
+        <button id="confirm-delete-btn" class="btn btn-danger-fill" data-i18n="general.delete"></button>
+        <button id="cancel-delete-btn" class="btn btn-secondary" data-i18n="general.cancel"></button>
       </div>
     </div>
   </div>

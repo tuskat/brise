@@ -16,6 +16,7 @@ import {
   loadDropdowns,
 } from './chat-api.js';
 import { handleDelete } from './chat-manage.js';
+import { t } from '../i18n/index.js';
 
 function showToast(opts) { window.showToast?.(opts); }
 
@@ -107,7 +108,7 @@ export function renderConversationList() {
   if (filtered.length === 0) {
     conversationList.innerHTML =
       '<p style="text-align:center;color:var(--text-tertiary);font-size:0.875rem;padding:1rem;">' +
-      (chatState.searchQuery ? 'No conversations found' : 'No conversations yet') + '</p>';
+      (chatState.searchQuery ? t('chat.noConversationsFound') : t('chat.noConversations')) + '</p>';
     return;
   }
 
@@ -146,7 +147,7 @@ export async function selectConversation(id) {
     refs.chatEmptyState?.classList.add('js-hidden');
     refs.chatThread?.classList.remove('js-hidden');
     if (refs.conversationTitle) refs.conversationTitle.textContent = conv.title;
-    if (refs.conversationModel)  refs.conversationModel.textContent  = conv.model        || 'No model';
+    if (refs.conversationModel)  refs.conversationModel.textContent  = conv.model        || '—';
     if (refs.conversationPersona) {
       refs.conversationPersona.textContent = conv.persona_name || '';
       refs.conversationPersona.style.display = conv.persona_name ? '' : 'none';

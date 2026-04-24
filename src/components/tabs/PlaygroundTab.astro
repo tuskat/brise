@@ -1,35 +1,33 @@
----
----
 <div id="playground-view" class="flex-col gap-lg m-10 js-hidden">
     <div class="row-between flex-wrap gap-lg">
     <div>
-      <h2 class="t-hero">Playground</h2>
-      <p class="t-subtitle">Make customize singular or batch calls</p>
+      <h2 class="t-hero" data-i18n="pg.title"></h2>
+      <p class="t-subtitle" data-i18n="pg.subtitle"></p>
     </div>
   </div>
   <!-- Selectors Row -->
   <div class="flex-row gap-lg flex-wrap">
     <div class="flex-col gap-sm pg-field-sm">
-      <label for="pg-persona-select" class="label label-sm">Persona</label>
+      <label for="pg-persona-select" class="label label-sm" data-i18n="pg.persona"></label>
       <select id="pg-persona-select" class="input input-select">
-        <option value="">Default (No Persona)</option>
+        <option value="" data-i18n="pg.noPersona"></option>
       </select>
     </div>
     <div class="flex-col gap-sm pg-field-sm">
-      <label for="pg-proxy-select" class="label label-sm">Proxy</label>
+      <label for="pg-proxy-select" class="label label-sm" data-i18n="pg.proxy"></label>
       <select id="pg-proxy-select" class="input input-select">
-        <option value="">Loading...</option>
+        <option value="" data-i18n="general.loading"></option>
       </select>
     </div>
     <div class="flex-col gap-sm pg-field-sm">
-      <label for="pg-format-select" class="label label-sm">Format</label>
+      <label for="pg-format-select" class="label label-sm" data-i18n="pg.format"></label>
       <select id="pg-format-select" class="input input-select">
-        <option value="">Free text</option>
-        <option value="md">Markdown (.md)</option>
-        <option value="html">HTML (.html)</option>
-        <option value="json">JSON (.json)</option>
-        <option value="json-strict">JSON Strict (.json)</option>
-        <option value="csv">CSV (.csv)</option>
+        <option value="" data-i18n="pg.freeText"></option>
+        <option value="md" data-i18n="pg.formatOption.md"></option>
+        <option value="html" data-i18n="pg.formatOption.html"></option>
+        <option value="json" data-i18n="pg.formatOption.json"></option>
+        <option value="json-strict" data-i18n="pg.formatOption.json-strict"></option>
+        <option value="csv" data-i18n="pg.formatOption.csv"></option>
       </select>
     </div>
   </div>
@@ -42,7 +40,7 @@
   <!-- Quantity Controls (shown when format is selected) -->
   <div id="pg-quantity-controls" class="flex-row gap-lg flex-wrap js-hidden" style="margin-top:0.25rem">
     <div class="flex-col gap-sm pg-field-xs">
-      <label for="pg-files-per-call" class="label label-sm">Files per call</label>
+      <label for="pg-files-per-call" class="label label-sm" data-i18n="pg.filesPerCall"></label>
       <select id="pg-files-per-call" class="input input-select">
         <option value="1" selected>1</option>
         <option value="2">2</option>
@@ -57,7 +55,7 @@
       </select>
     </div>
     <div class="flex-col gap-sm pg-field-xs">
-      <label for="pg-calls" class="label label-sm">Calls</label>
+      <label for="pg-calls" class="label label-sm" data-i18n="pg.calls"></label>
       <select id="pg-calls" class="input input-select">
         <option value="1" selected>1</option>
         <option value="2">2</option>
@@ -77,28 +75,26 @@
 
   <!-- Prompt Input -->
   <div class="flex-col gap-sm">
-    <label for="pg-prompt" class="label label-sm">Prompt</label>
+    <label for="pg-prompt" class="label label-sm" data-i18n="pg.prompt"></label>
     <textarea
       id="pg-prompt"
       rows="6"
       class="input input-textarea"
       style="min-height:150px"
-      placeholder="Enter your prompt here..."
+      data-i18n-placeholder="pg.enterPrompt"
     ></textarea>
   </div>
 
   <!-- Send Button -->
-  <button id="pg-send-btn" class="btn btn-primary btn-lg self-start">
-    Run
-  </button>
+  <button id="pg-send-btn" class="btn btn-primary btn-lg self-start" data-i18n="pg.run"></button>
 
   <!-- Response Container -->
   <div id="pg-response-container" class="card pg-response mt-md js-hidden">
     <div class="row-between mb-md pb-md border-b pg-response-header">
-      <h2 id="pg-response-title" class="label">Response</h2>
+      <h2 id="pg-response-title" class="label" data-i18n="pg.response"></h2>
       <div class="flex-row gap-md">
         <span id="pg-response-meta" class="t-caption-mono c-tertiary"></span>
-        <button id="pg-download-btn" class="btn btn-primary btn-sm js-hidden">Download</button>
+        <button id="pg-download-btn" class="btn btn-primary btn-sm js-hidden" data-i18n="general.download"></button>
       </div>
     </div>
     <div id="pg-response-text" class="text-block"></div>
@@ -113,7 +109,7 @@
 
   <!-- Error Container -->
   <div id="pg-error-container" class="mt-md p-md border rounded bg-error js-hidden">
-    <h2 class="t-label c-error m-0 mb-sm">Error</h2>
+    <h2 class="t-label c-error m-0 mb-sm" data-i18n="general.error"></h2>
     <p id="pg-error-text" class="m-0 c-error t-body"></p>
   </div>
 </div>

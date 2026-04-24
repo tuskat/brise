@@ -12,6 +12,7 @@ import {
 } from './chat-dom.js';
 import { sendMessageStream } from './chat-api.js';
 import { loadConversations } from './chat-sidebar.js';
+import { t } from '../i18n/index.js';
 
 function showToast(opts) { window.showToast?.(opts); }
 

@@ -147,22 +147,31 @@ const { title } = Astro.props;
           fill="var(--bg-waves)"></path>
       </svg>
     </div>
-    <script is:inline>
-      // Hide skeleton immediately once DOM is ready
-      (function () {
-        var sk = document.getElementById("page-skeleton");
-        if (sk) {
-          // Let the browser paint the skeleton first, then fade it out
-          requestAnimationFrame(function () {
-            requestAnimationFrame(function () {
-              sk.classList.add("js-skeleton-fadeout");
-              setTimeout(function () {
-                sk.style.display = "none";
-              }, 350);
-            });
-          });
-        }
-      })();
+    <script>
+      import { initI18n, setLocale, applyTranslations } from '../i18n/index.js';
+
+      // Init locale + fill all data-i18n elements
+      initI18n();
+
+      // Locale select handler — instant switch, no reload
+      const localeSelect = document.getElementById('locale-select');
+      if (localeSelect) {
+        localeSelect.addEventListener('change', () => {
+          setLocale(localeSelect.value);
+          applyTranslations();
+        });
+      }
+
+      // Hide skeleton after translations are applied
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          const sk = document.getElementById("page-skeleton");
+          if (sk) {
+            sk.classList.add("js-skeleton-fadeout");
+            setTimeout(() => { sk.style.display = "none"; }, 350);
+          }
+        });
+      });
     </script>
   </body>
 </html>
