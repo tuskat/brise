@@ -64,7 +64,7 @@ The deploy script uses `{base_path}/docker/brise` by default. Override with `DEP
 
 ## Approach 1: SSH Deploy (Recommended)
 
-Fully scripted — one command. The NAS builds the Docker image natively, so it works on any CPU architecture (ARM or x86).
+Fully scripted — one command. The image is built on your Mac for the NAS's architecture and piped over SSH, so **Docker Desktop must be running locally** before you start.
 
 ```bash
 # Basic (auto-discovers storage path)
@@ -85,10 +85,11 @@ SKIP_TEST=true DEPLOY_HOST=NAS_IP npm run deploy:ugreen
 | 2 | Opens SSH multiplexed connection (one password prompt if no SSH key) |
 | 3 | Checks Docker is installed on the NAS |
 | 4 | Auto-discovers the NAS storage path (`/volume1`, `/media`, etc.) |
-| 5 | Creates project directories on the NAS |
-| 6 | rsyncs the project (excludes `node_modules/`, `data/`, `.git/`, `dist/`) |
-| 7 | Runs `docker compose up -d --build` on the NAS |
-| 8 | Health-checks `http://localhost:4321/api/health` |
+| 5 | Creates the project directory on the NAS (asks for confirmation before wiping stale files) |
+| 6 | tars the project (excludes `node_modules/`, `data/`, `.git/`, `dist/`) and extracts it on the NAS |
+| 7 | Builds the image **locally** for the NAS's architecture, then pipes it via `docker save` / `docker load` over SSH |
+| 8 | Starts the container via `docker compose up -d --no-build` on the NAS |
+| 9 | Health-checks `http://localhost:4321/api/health` |
 
 **After deploy, visit:**
 
@@ -99,9 +100,9 @@ SKIP_TEST=true DEPLOY_HOST=NAS_IP npm run deploy:ugreen
 
 | NAS Path | Container Path | What it holds |
 |----------|---------------|----------------|
-| `{base}/docker/brise/data` | `/app/data` | SQLite database |
-| `{base}/docker/brise/personas` | `/app/personas` | Persona config JSONs |
-| `{base}/docker/brise/proxies` | `/app/proxies` | Proxy config JSONs |
+| `{base}/docker/brise/data` | `/app/data` | SQLite database — history **and** personas / proxies |
+
+Personas and proxies are now stored inside the SQLite DB rather than as loose JSON files. The container runs as a non-root user (UID 1000 by default) and automatically chowns `/app/data` on boot so bind-mount permissions just work.
 
 **Managing the running container via SSH:**
 
@@ -183,8 +184,8 @@ In the UGOS Docker UI, click **Create Container** from the imported image, and c
 | Host Path (NAS) | Container Path | Read/Write |
 |-----------------|---------------|------------|
 | `/your/path/brise/data` | `/app/data` | Read+Write |
-| `/your/path/brise/personas` | `/app/personas` | Read+Write |
-| `/your/path/brise/proxies` | `/app/proxies` | Read+Write |
+
+(Only `data/` needs mounting — personas and proxies live in the SQLite DB alongside history.)
 
 **Environment Variables:**
 
@@ -222,7 +223,7 @@ All of this is available in the UGOS Docker GUI:
 DEPLOY_HOST=NAS_IP npm run deploy:ugreen
 ```
 
-Data, personas, and proxies are preserved (they're in mounted volumes, not in the image).
+Data, personas, and proxies are preserved — they all live in `data/history.db`, which is bind-mounted and never touched by the sync.
 
 ### If using GUI deploy (Approach 2):
 
@@ -238,13 +239,32 @@ Data, personas, and proxies are preserved (they're in mounted volumes, not in th
 
 | Problem | Likely cause | Fix |
 |---------|-------------|-----|
+| `failed to connect to the docker API at unix:///.../docker.sock` | Docker Desktop isn't running on your Mac | Open the Docker Desktop app; run `docker info` to confirm, then re-run the deploy |
 | Password asked every step | No SSH key set up | Run `ssh-keygen -t ed25519 && ssh-copy-id root@NAS_IP` |
 | `invalid path: /volume1/...` | NAS doesn't use `/volume1` | Set `DEPLOY_PATH=/media/docker/brise` or let script auto-discover |
+| `DEPLOY_PATH looks too shallow` | Auto-discovery returned `/` or a 1-2 segment path | Set `DEPLOY_PATH=` explicitly to something at least 3 segments deep |
 | Can't SSH into NAS | SSH not enabled | UGOS Pro → Control Panel → Terminal & SNMP → Enable SSH |
 | `docker: command not found` | Docker not installed | App Center → Install Docker / Container Manager |
-| `docker compose` not found | Older Docker version | Script tries pip install; or use Approach 2 (GUI) |
+| `docker compose` not found | Older Docker version | Install Container Manager via UGOS App Center |
+| `rm: cannot remove 'data/history.db': Permission denied` during sync | Files left over from an older deploy that ran the container as root | SSH to the NAS and `sudo chown -R 1000:1000 /volume1/docker/brise` — then re-run |
+| `addgroup: gid '1000' in use` during image build | Stale `APP_UID=0` detected from a root-owned volume | The script now ignores UID 0; update to the latest script and re-run |
 | Container exits immediately | Port conflict or missing dirs | Check logs: UGOS Docker UI → container → Logs |
 | Can't reach `http://NAS_IP:4321` | Firewall blocking port | UGOS Pro → Security → Firewall — allow 4321, 4322 |
 | Database empty on restart | Data volume not mounted | Make sure `/app/data` is mapped to a persistent NAS folder |
+| Docs site (port 4322) stuck in redirect loop | Old image served SPA-mode static; missing for newer builds | Rebuild with the current Dockerfile — `serve` no longer uses `-s` |
+| Personas fail to load / save | Old bind-mount `personas/` still around on NAS | Safe to delete: `rm -rf /volume1/docker/brise/personas` — data moved to SQLite |
 | Image won't import in GUI | Wrong CPU architecture | Rebuild with correct `PLATFORM=linux/arm64` (or `amd64`) |
-| Build fails on NAS (`npm ci`) | No internet on NAS | Check NAS network; or use Approach 2 (pre-built image) |
+| Build fails on NAS (`npm ci`) | No internet on NAS | The default flow builds locally and transfers the image — no NAS internet needed |
+
+### Collecting logs
+
+If the container is misbehaving, grab a recent log slice:
+
+```bash
+ssh root@NAS_IP 'docker logs brise --tail 100'
+
+# or follow live while you reproduce
+ssh root@NAS_IP 'docker logs -f brise'
+```
+
+The container runs `serve` (docs, port 4322) and `node` (app, port 4321) side by side, so you'll see both streams interleaved.
