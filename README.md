@@ -112,8 +112,6 @@ docker-compose up -d
 
 User-facing documentation is built with [Starlight](https://starlight.astro.build) and served at `/docs` when running the app. Source files live in `src/content/docs/`.
 
-Internal project documentation (architecture specs, phase roadmaps, conventions, agent guidelines) lives in `.project-docs/` (gitignored).
-
 ## License
 
 CC BY-NC-SA 4.0 — see [LICENSE](LICENSE) for details.
