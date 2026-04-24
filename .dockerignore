@@ -1,0 +1,36 @@
+# ── Build artifacts ────────────────────────────
+node_modules
+dist
+.astro
+
+# ── Git ────────────────────────────────────────
+.git
+.gitignore
+
+# ── Runtime data (mounted as volumes) ──────────
+data
+.env
+
+# Exclude sample personas from the bundled defaults
+proxies/default.json.example
+
+# ── Dev tooling ────────────────────────────────
+.pi
+.project-docs
+tests
+vitest.config.js
+
+# ── OS junk ────────────────────────────────────
+.DS_Store
+Thumbs.db
+*.log
+
+# ── Docs build (has its own Dockerfile stage) ──
+docs/node_modules
+docs/dist
+docs/.astro
+
+# ── Docker itself ──────────────────────────────
+Dockerfile
+docker-compose.yml
+.dockerignore

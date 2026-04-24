@@ -1,7 +1,6 @@
-import fs from 'node:fs/promises';
-import path from 'node:path';
 import { logInteraction } from '../../lib/db.js';
 import { loadAllProxies } from '../../lib/proxy-loader.js';
+import { loadPersona } from '../../lib/persona-loader.js';
 import { extractFormatContent, extractMultipleFormatContent, validateFormatContent, formatExtension, loadFormatSchema, buildFormatInstruction } from '../../lib/format-extractor.js';
 
 // Default proxy ID to use when none specified
@@ -33,16 +32,14 @@ export async function POST({ request }) {
         let parameters = {};
 
         if (persona_id) {
-            const personasDir = path.resolve(process.cwd(), 'personas');
-            const personaPath = path.join(personasDir, `${persona_id}.json`);
             try {
-                const content = await fs.readFile(personaPath, 'utf-8');
-                const persona = JSON.parse(content);
-                finalPrompt = `${persona.system_prompt}\n\nUser: ${prompt}`;
-                parameters = persona.parameters || {};
+                const persona = await loadPersona(persona_id);
+                if (persona) {
+                    finalPrompt = `${persona.system_prompt}\n\nUser: ${prompt}`;
+                    parameters = persona.parameters || {};
+                }
             } catch (e) {
                 console.error("Persona loading error:", e);
-                // Continue without persona if loading fails
             }
         }
 

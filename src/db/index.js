@@ -58,6 +58,179 @@ if (!msgCols.find(c => c.name === 'persona_name')) {
     db.exec(`ALTER TABLE conversation_messages ADD COLUMN persona_name TEXT`);
 }
 
+// Personas & Proxies (previously stored as JSON files on disk)
+db.exec(`
+    CREATE TABLE IF NOT EXISTS personas (
+        id TEXT PRIMARY KEY,
+        name TEXT NOT NULL,
+        system_prompt TEXT NOT NULL,
+        parameters TEXT NOT NULL DEFAULT '{}',
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+    CREATE TABLE IF NOT EXISTS proxies (
+        id TEXT PRIMARY KEY,
+        name TEXT NOT NULL,
+        url TEXT NOT NULL,
+        model TEXT NOT NULL,
+        is_local_network INTEGER NOT NULL DEFAULT 1,
+        api_key TEXT,
+        api_schema TEXT NOT NULL DEFAULT 'ollama',
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        last_used DATETIME
+    );
+`);
+
+// Seed defaults on first boot (tables empty)
+const SEED_PERSONAS = [
+    {
+        id: 'coder-pro',
+        name: 'Senior Software Engineer',
+        system_prompt: 'You are an expert developer. Write clean, modular, and well-documented code. Use best practices.',
+        parameters: { temperature: 0.2, top_p: 0.9, max_tokens: 2000 },
+    },
+    {
+        id: 'creative-writer',
+        name: 'Creative Writer',
+        system_prompt: 'You are a talented and imaginative creative writer. Use evocative language and rich metaphors.',
+        parameters: { temperature: 0.9, top_p: 1.0, max_tokens: 2000 },
+    },
+];
+
+const SEED_PROXIES = [
+    {
+        id: 'ollama-local',
+        name: 'Ollama Local',
+        url: 'http://localhost:11434/api/generate',
+        model: 'your-model',
+        is_local_network: 1,
+        api_key: null,
+        api_schema: 'ollama',
+    },
+];
+
+if (db.prepare('SELECT COUNT(*) as c FROM personas').get().c === 0) {
+    const insert = db.prepare(`
+        INSERT INTO personas (id, name, system_prompt, parameters)
+        VALUES (?, ?, ?, ?)
+    `);
+    for (const p of SEED_PERSONAS) {
+        insert.run(p.id, p.name, p.system_prompt, JSON.stringify(p.parameters));
+    }
+}
+
+if (db.prepare('SELECT COUNT(*) as c FROM proxies').get().c === 0) {
+    const insert = db.prepare(`
+        INSERT INTO proxies (id, name, url, model, is_local_network, api_key, api_schema)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+    `);
+    for (const p of SEED_PROXIES) {
+        insert.run(p.id, p.name, p.url, p.model, p.is_local_network, p.api_key, p.api_schema);
+    }
+}
+
+function rowToPersona(row) {
+    if (!row) return null;
+    let parameters = {};
+    try { parameters = JSON.parse(row.parameters || '{}'); } catch { parameters = {}; }
+    return { id: row.id, name: row.name, system_prompt: row.system_prompt, parameters };
+}
+
+function rowToProxy(row) {
+    if (!row) return null;
+    return {
+        id: row.id,
+        name: row.name,
+        url: row.url,
+        model: row.model,
+        is_local_network: !!row.is_local_network,
+        api_key: row.api_key,
+        api_schema: row.api_schema || 'ollama',
+        created_at: row.created_at,
+        last_used: row.last_used,
+    };
+}
+
+export const personaStore = {
+    listAll() {
+        return db.prepare('SELECT * FROM personas ORDER BY name').all().map(rowToPersona);
+    },
+    get(id) {
+        return rowToPersona(db.prepare('SELECT * FROM personas WHERE id = ?').get(id));
+    },
+    create(persona) {
+        const params = JSON.stringify(persona.parameters || {});
+        db.prepare(`
+            INSERT INTO personas (id, name, system_prompt, parameters)
+            VALUES (?, ?, ?, ?)
+        `).run(persona.id, persona.name, persona.system_prompt, params);
+        return this.get(persona.id);
+    },
+    update(id, patch) {
+        const existing = this.get(id);
+        if (!existing) return null;
+        const merged = {
+            name: patch.name ?? existing.name,
+            system_prompt: patch.system_prompt ?? existing.system_prompt,
+            parameters: {
+                temperature: patch.parameters?.temperature ?? existing.parameters?.temperature ?? 0.7,
+                top_p: patch.parameters?.top_p ?? existing.parameters?.top_p ?? 0.9,
+                max_tokens: patch.parameters?.max_tokens ?? existing.parameters?.max_tokens ?? 2000,
+            },
+        };
+        db.prepare(`
+            UPDATE personas SET name = ?, system_prompt = ?, parameters = ?, updated_at = CURRENT_TIMESTAMP
+            WHERE id = ?
+        `).run(merged.name, merged.system_prompt, JSON.stringify(merged.parameters), id);
+        return this.get(id);
+    },
+    delete(id) {
+        return db.prepare('DELETE FROM personas WHERE id = ?').run(id).changes > 0;
+    },
+};
+
+export const proxyStore = {
+    listAll() {
+        return db.prepare('SELECT * FROM proxies ORDER BY name').all().map(rowToProxy);
+    },
+    get(id) {
+        return rowToProxy(db.prepare('SELECT * FROM proxies WHERE id = ?').get(id));
+    },
+    upsert(proxy) {
+        const existing = this.get(proxy.id);
+        if (existing) {
+            const merged = { ...existing, ...proxy };
+            db.prepare(`
+                UPDATE proxies SET name = ?, url = ?, model = ?, is_local_network = ?, api_key = ?, api_schema = ?
+                WHERE id = ?
+            `).run(
+                merged.name, merged.url, merged.model,
+                merged.is_local_network ? 1 : 0,
+                merged.api_key ?? null,
+                merged.api_schema || 'ollama',
+                proxy.id,
+            );
+        } else {
+            db.prepare(`
+                INSERT INTO proxies (id, name, url, model, is_local_network, api_key, api_schema)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            `).run(
+                proxy.id, proxy.name, proxy.url, proxy.model,
+                proxy.is_local_network ? 1 : 0,
+                proxy.api_key ?? null,
+                proxy.api_schema || 'ollama',
+            );
+        }
+        return this.get(proxy.id);
+    },
+    delete(id) {
+        return db.prepare('DELETE FROM proxies WHERE id = ?').run(id).changes > 0;
+    },
+    touch(id) {
+        db.prepare('UPDATE proxies SET last_used = CURRENT_TIMESTAMP WHERE id = ?').run(id);
+    },
+};
+
 export const dbOperations = {
     async logInteraction(interaction) {
         const { persona_id, user_prompt, ai_response, latency, status } = interaction;

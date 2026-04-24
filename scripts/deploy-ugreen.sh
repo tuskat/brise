@@ -176,13 +176,13 @@ esac
 
 # Verify writable
 info "Checking if $DEPLOY_PATH is writable..."
-ssh_run "mkdir -p '$DEPLOY_PATH/data' '$DEPLOY_PATH/personas' '$DEPLOY_PATH/proxies' '$DEPLOY_PATH/docs'" \
+ssh_run "mkdir -p '$DEPLOY_PATH/data' '$DEPLOY_PATH/docs'" \
   || error "Cannot create $DEPLOY_PATH on the NAS. Check permissions or set DEPLOY_PATH manually."
 info "Directories created ✓"
 
 # ── Step 5: Sync project files ─────────────────────────────────
 if [ "$ASSUME_YES" != "true" ]; then
-  warn "About to wipe everything under $DEPLOY_PATH (except data/, personas/, proxies/) on $SSH_TARGET."
+  warn "About to wipe everything under $DEPLOY_PATH (except data/) on $SSH_TARGET."
   echo -e "${BLUE}Continue? [y/N]${NC} "
   read -r CONFIRM
   case "$CONFIRM" in
@@ -202,7 +202,7 @@ tar czf - \
   --exclude='.DS_Store' \
   --exclude='*.log' \
   --exclude='archive' \
-  . | ssh_run "cd '$DEPLOY_PATH' && find . -mindepth 1 -maxdepth 1 ! -name data ! -name personas ! -name proxies -exec rm -rf {} + && tar xzf -"
+  . | ssh_run "cd '$DEPLOY_PATH' && find . -mindepth 1 -maxdepth 1 ! -name data -exec rm -rf {} + && tar xzf -"
 info "Sync complete ✓"
 
 # ── Step 6: Build image and transfer to NAS ─────────────────────
@@ -223,8 +223,10 @@ esac
 # Detect the UID/GID that owns the NAS share so volumes match the container user
 SHARE_UID=$(ssh_run "stat -c %u '$DEPLOY_PATH/data' 2>/dev/null" | tr -d '[:space:]' || true)
 SHARE_GID=$(ssh_run "stat -c %g '$DEPLOY_PATH/data' 2>/dev/null" | tr -d '[:space:]' || true)
-[ -n "$SHARE_UID" ] && APP_UID="$SHARE_UID"
-[ -n "$SHARE_GID" ] && APP_GID="$SHARE_GID"
+# UID/GID 0 means the dirs are root-owned (stale from an earlier broken deploy).
+# Don't propagate that into the image — keep the default and let the entrypoint chown.
+[ -n "$SHARE_UID" ] && [ "$SHARE_UID" != "0" ] && APP_UID="$SHARE_UID"
+[ -n "$SHARE_GID" ] && [ "$SHARE_GID" != "0" ] && APP_GID="$SHARE_GID"
 info "Container will run as UID:GID $APP_UID:$APP_GID (to match NAS share ownership)"
 
 info "Building Docker image locally for $DOCKER_PLATFORM..."
@@ -260,8 +262,6 @@ ssh_run "cd '$DEPLOY_PATH' && '$DOCKER_BIN' compose up -d --no-build --pull neve
     -p 4321:4321 \
     -p 4322:4322 \
     -v '$DEPLOY_PATH/data':/app/data \
-    -v '$DEPLOY_PATH/personas':/app/personas \
-    -v '$DEPLOY_PATH/proxies':/app/proxies \
     -e NODE_ENV=production \
     -e HOST=0.0.0.0 \
     -e PORT=4321 \

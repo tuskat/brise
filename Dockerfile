@@ -27,7 +27,11 @@ ENV PORT=4321
 # Override at build time if your NAS uses a different UID/GID.
 ARG APP_UID=1000
 ARG APP_GID=1000
-RUN addgroup -g ${APP_GID} app && adduser -D -u ${APP_UID} -G app app
+RUN if [ "${APP_UID}" = "0" ] || [ "${APP_GID}" = "0" ]; then \
+      echo "Refusing to run as root — APP_UID/APP_GID must be non-zero" >&2; exit 1; \
+    fi \
+ && if ! getent group ${APP_GID} >/dev/null; then addgroup -g ${APP_GID} app; fi \
+ && if ! getent passwd ${APP_UID} >/dev/null; then adduser -D -u ${APP_UID} -G $(getent group ${APP_GID} | cut -d: -f1) app; fi
 
 # su-exec lets the entrypoint drop from root to the app user after fixing volume perms.
 RUN apk add --no-cache su-exec
@@ -42,36 +46,29 @@ RUN apk add --no-cache --virtual .build-deps python3 make g++ \
 COPY --from=builder-app /app/dist ./dist
 COPY --from=builder-docs /docs/dist ./docs-dist
 
-# Bundled defaults, seeded into bind-mounts on first boot if empty.
-COPY personas ./personas.sample
-COPY proxies ./proxies.sample
 # Format schemas are read from the working dir at runtime, not bind-mounted.
 COPY format-schemas ./format-schemas
 
-# Create volume dirs and hand ownership to the app user
-RUN mkdir -p /app/data /app/personas /app/proxies \
- && chown -R app:app /app
+# Create the data volume dir and hand ownership to the app user.
+# Personas & proxies now live in SQLite — no bind-mounts needed.
+RUN mkdir -p /app/data \
+ && chown -R ${APP_UID}:${APP_GID} /app
 
 # Lightweight static server for the docs site
 RUN npm install -g serve@latest --no-audit --no-fund
 
 # Entrypoint: run as root just long enough to fix bind-mount ownership, then drop to app.
 # Runs serve + node together and exits if either dies.
-RUN cat > /app/entrypoint.sh <<'EOF' && chmod +x /app/entrypoint.sh
+RUN cat > /app/entrypoint.sh <<EOF && chmod +x /app/entrypoint.sh
 #!/bin/sh
 set -e
-for d in /app/data /app/personas /app/proxies; do
-  mkdir -p "$d"
-  chown -R app:app "$d" 2>/dev/null || true
-done
-# Seed defaults on first boot (only if the bind-mount is empty)
-for name in personas proxies; do
-  if [ -d "/app/${name}.sample" ] && [ -z "$(ls -A "/app/$name" 2>/dev/null)" ]; then
-    cp -a "/app/${name}.sample/." "/app/$name/"
-    chown -R app:app "/app/$name"
-  fi
-done
-exec su-exec app:app /bin/sh -c '
+APP_UID=${APP_UID}
+APP_GID=${APP_GID}
+EOF
+RUN cat >> /app/entrypoint.sh <<'EOF'
+mkdir -p /app/data
+chown -R "$APP_UID:$APP_GID" /app/data 2>/dev/null || true
+exec su-exec "$APP_UID:$APP_GID" /bin/sh -c '
   set -e
   serve /app/docs-dist -l 4322 &
   DOCS_PID=$!

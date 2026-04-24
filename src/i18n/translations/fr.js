@@ -196,7 +196,6 @@ export default {
   'proxies.form.updated': 'Proxy mis à jour',
   'proxies.form.testRequired': 'URL et Modèle sont obligatoires pour le test',
   'proxies.form.testing': 'Test en cours...',
-  'proxies.form.testConnection': 'Tester la connexion',
   'proxies.delete.title': 'Supprimer le proxy',
   'proxies.delete.confirm': 'Êtes-vous sûr de vouloir supprimer {name} ? Cette action est irréversible.',
   'proxies.delete.failed': 'Échec de la suppression du proxy',

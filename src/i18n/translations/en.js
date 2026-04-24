@@ -196,7 +196,6 @@ export default {
   'proxies.form.updated': 'Proxy updated',
   'proxies.form.testRequired': 'URL and Model are required for testing',
   'proxies.form.testing': 'Testing...',
-  'proxies.form.testConnection': 'Test Connection',
   'proxies.delete.title': 'Delete Proxy',
   'proxies.delete.confirm': 'Are you sure you want to delete {name}? This cannot be undone.',
   'proxies.delete.failed': 'Failed to delete proxy',

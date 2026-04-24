@@ -39,7 +39,6 @@ function getRefs() {
     deleteProxyName:     document.getElementById('delete-proxy-name'),
     confirmProxyDeleteBtn: document.getElementById('confirm-proxy-delete-btn'),
     cancelProxyDeleteBtn:  document.getElementById('cancel-proxy-delete-btn'),
-    testProxyBtn:        document.getElementById('test-proxy-btn'),
     localCheckbox:       document.getElementById('px-local'),
     apiKeyField:         document.getElementById('api-key-field'),
     apiSchemaSelect:     document.getElementById('px-schema'),
@@ -192,48 +191,6 @@ async function testProxyById(id) {
     }
   } catch (err) {
     showToast()?.({ message: t('proxies.status.testFailed', { error: err.message }), variant: 'error' });
-  }
-}
-
-// ═══════════════════════════════════════════════════════════
-// CONNECTION TEST (from form)
-// ═══════════════════════════════════════════════════════════
-
-async function testProxyForm() {
-  const refs = getRefs();
-  const url = document.getElementById('px-url')?.value?.trim();
-  const model = document.getElementById('px-model')?.value?.trim();
-  const is_local_network = refs.localCheckbox?.checked ?? true;
-  const api_key = document.getElementById('px-apikey')?.value?.trim() || null;
-  const api_schema = refs.apiSchemaSelect?.value || 'ollama';
-
-  if (!url || !model) {
-    showToast()?.({ message: t('proxies.form.testRequired'), variant: 'warning' });
-    return;
-  }
-
-  refs.testProxyBtn.disabled = true;
-  refs.testProxyBtn.textContent = t('proxies.form.testing');
-
-  try {
-    const response = await fetch('/api/proxies/test', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ url, model, is_local_network, api_key, api_schema })
-    });
-
-    const result = await response.json();
-
-    if (result.success) {
-      showToast()?.({ message: t('proxies.status.success', { ms: result.latency }), variant: 'success' });
-    } else {
-      showToast()?.({ message: t('proxies.status.failed', { error: result.error }), variant: 'error' });
-    }
-  } catch (err) {
-    showToast()?.({ message: t('proxies.status.testFailed', { error: err.message }), variant: 'error' });
-  } finally {
-    refs.testProxyBtn.disabled = false;
-    refs.testProxyBtn.textContent = t('proxies.form.testConnection');
   }
 }
 
@@ -401,8 +358,6 @@ export function initProxiesEvents() {
   refs.newProxyBtn?.addEventListener('click', openNewProxyModal);
   refs.proxyForm?.addEventListener('submit', handleProxyFormSubmit);
   refs.confirmProxyDeleteBtn?.addEventListener('click', handleProxyDelete);
-  refs.testProxyBtn?.addEventListener('click', testProxyForm);
-
   // Track when user actually edits the api_key field
   const apiKeyInput = document.getElementById('px-apikey');
   apiKeyInput?.addEventListener('input', () => { apiKeyEdited = true; });
