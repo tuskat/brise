@@ -1,0 +1,24 @@
+[
+  {
+    "id": "ollama-local",
+    "name": "Ollama Local",
+    "url": "http://192.168.1.100:11434/api/generate",
+    "model": "gemma4:e2b",
+    "is_local_network": true,
+    "api_key": null,
+    "created_at": "2025-04-22T00:00:00Z",
+    "last_used": "2026-04-23T11:31:57.064Z",
+    "api_schema": "ollama"
+  },
+  {
+    "id": "groq-llama",
+    "name": "Qwen3:32b",
+    "url": "https://api.groq.com/openai/v1/chat/completions",
+    "model": "qwen/qwen3-32b",
+    "is_local_network": false,
+    "api_key": "YOUR_API_KEY_HERE",
+    "created_at": "2026-04-22T14:36:21.376Z",
+    "last_used": "2026-04-23T09:23:21.925Z",
+    "api_schema": "openai"
+  }
+]

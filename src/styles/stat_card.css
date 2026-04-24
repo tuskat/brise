@@ -1,0 +1,11 @@
+/* ═══════════════════════════════════════════════════════════════
+   STAT CARD
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Only the large stat number needs a unique rule */
+.stat-value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.1;
+}

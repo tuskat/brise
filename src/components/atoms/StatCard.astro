@@ -1,0 +1,26 @@
+---
+interface Props {
+  label: string;
+  value: string | number;
+  unit?: string;
+  trend?: 'up' | 'down' | 'neutral';
+  trendValue?: string;
+}
+const { label, value, unit, trend, trendValue } = Astro.props;
+---
+
+<div class="card card-hover stat-card flex-col gap-xs">
+  <span class="label label-sm">{label}</span>
+  <div class="flex-row gap-xs items-baseline">
+    <span class="stat-value">{value}</span>
+    {unit && <span class="t-caption c-tertiary t-weight-500">{unit}</span>}
+  </div>
+  {trend && trendValue && (
+    <div class="flex-row gap-xs t-caption t-weight-500 mt-sm">
+      {trend === 'up' && <span class="c-success">↑</span>}
+      {trend === 'down' && <span class="c-error">↓</span>}
+      {trend === 'neutral' && <span class="c-tertiary">→</span>}
+      <span class={trend === 'up' ? 'c-success' : trend === 'down' ? 'c-error' : 'c-tertiary'}>{trendValue}</span>
+    </div>
+  )}
+</div>

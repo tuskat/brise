@@ -1,0 +1,10 @@
+{
+  "format": "html",
+  "type": "suggestion",
+  "suggestions": [
+    "Include <!DOCTYPE html>",
+    "Use semantic tags (<main>, <section>, <nav>)",
+    "Inline styles or <style> block only (no external CSS)",
+    "Include a <title> element"
+  ]
+}

@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  gemma-control-center:
+    build: .
+    container_name: gcc
+    ports:
+      - "4321:4321"   # Main GCC dashboard (SSR)
+      - "4322:4322"   # Docs site (static)
+    volumes:
+      - ./data:/app/data           # SQLite database persistence
+      - ./personas:/app/personas   # Persona configs
+      - ./proxies:/app/proxies     # Proxy backend configs
+    environment:
+      - NODE_ENV=production
+      - HOST=0.0.0.0
+      - PORT=4321
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:4321"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s

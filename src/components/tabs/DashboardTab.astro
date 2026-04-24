@@ -1,0 +1,80 @@
+---
+---
+
+<div id="dashboard-view" class="m-10 js-hidden">
+  <div class="row-between flex-wrap gap-lg">
+    <div>
+      <h2 class="t-hero">Dashboard</h2>
+      <p class="t-subtitle">Overview of your LLM usage and performance</p>
+    </div>
+  </div>
+
+  <!-- Summary Cards -->
+  <div class="dashboard-grid">
+    <div class="card card-hover stat-card flex-col gap-xs">
+      <span class="label label-sm">Total Requests</span>
+      <div class="flex-row gap-xs items-baseline">
+        <span id="metric-total" class="stat-value">—</span>
+      </div>
+    </div>
+    <div class="card card-hover stat-card flex-col gap-xs">
+      <span class="label label-sm">Success Rate</span>
+      <div class="flex-row gap-xs items-baseline">
+        <span id="metric-success-rate" class="stat-value">—</span>
+        <span class="t-caption c-tertiary t-weight-500">%</span>
+      </div>
+    </div>
+    <div class="card card-hover stat-card flex-col gap-xs">
+      <span class="label label-sm">Avg Latency</span>
+      <div class="flex-row gap-xs items-baseline">
+        <span id="metric-avg-latency" class="stat-value">—</span>
+        <span class="t-caption c-tertiary t-weight-500">ms</span>
+      </div>
+    </div>
+    <div class="card card-hover stat-card flex-col gap-xs">
+      <span class="label label-sm">Recent Avg</span>
+      <div class="flex-row gap-xs items-baseline">
+        <span id="metric-recent-latency" class="stat-value">—</span>
+        <span class="t-caption c-tertiary t-weight-500">ms</span>
+      </div>
+    </div>
+    <div class="card card-hover stat-card flex-col gap-xs">
+      <span class="label label-sm">Min Latency</span>
+      <div class="flex-row gap-xs items-baseline">
+        <span id="metric-min-latency" class="stat-value">—</span>
+        <span class="t-caption c-tertiary t-weight-500">ms</span>
+      </div>
+    </div>
+    <div class="card card-hover stat-card flex-col gap-xs">
+      <span class="label label-sm">Max Latency</span>
+      <div class="flex-row gap-xs items-baseline">
+        <span id="metric-max-latency" class="stat-value">—</span>
+        <span class="t-caption c-tertiary t-weight-500">ms</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts Row -->
+  <div class="dashboard-charts">
+    <div class="mt-lg">
+      <h3 class="label">Persona Usage</h3>
+      <div id="persona-usage-chart" class="card dashboard-chart-area">
+        <p class="c-tertiary t-caption text-center m-20">No data yet</p>
+      </div>
+    </div>
+    <div class="mt-lg">
+      <h3 class="label">Daily Activity (Last 7 Days)</h3>
+      <div id="daily-usage-chart" class="card dashboard-chart-area">
+        <p class="c-tertiary t-caption text-center m-20">No data yet</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Activity -->
+  <div class="dashboard-section-full mt-lg">
+    <h3 class="label">Recent Activity</h3>
+    <div id="recent-activity" class="card dashboard-activity-list p-0">
+      <p class="c-tertiary t-caption text-center m-20">No activity yet</p>
+    </div>
+  </div>
+</div>

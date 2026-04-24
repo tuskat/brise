@@ -1,0 +1,38 @@
+/* ═══════════════════════════════════════════════════════════════
+   LAYOUT
+   ═══════════════════════════════════════════════════════════════ */
+.main-content {
+  margin-left: 220px;
+  min-height: 100vh;
+  opacity: 0;
+  transform: translateY(8px);
+  animation: page-fade-in 0.4s ease 0.05s forwards;
+  display: flex;
+  flex-direction: column;
+  transition: margin-left 0.2s ease;
+}
+
+@media (min-width: 768px) {
+  .main-content.js-sidebar-collapsed {
+    margin-left: 58px;
+  }
+}
+@keyframes page-fade-in {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    margin-left: 0;
+    padding: 0.5rem;
+    padding-top: 4rem;
+    animation: page-fade-in 0.35s ease 0.05s forwards;
+  }
+
+  .main-content.chat-content {
+    padding: 0;
+  }
+}

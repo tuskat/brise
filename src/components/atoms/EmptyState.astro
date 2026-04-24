@@ -1,0 +1,25 @@
+---
+interface Props {
+  title: string;
+  description?: string;
+  actionLabel?: string;
+  actionId?: string;
+}
+const { title, description, actionLabel, actionId } = Astro.props;
+---
+
+<div class="empty-state flex-col row-center text-center py-lg px-md">
+  <div class="empty-state-icon c-tertiary opacity-50 mb-md">
+    <slot name="icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <circle cx="12" cy="12" r="10"/>
+        <path d="M8 15h8M9 9h.01M15 9h.01"/>
+      </svg>
+    </slot>
+  </div>
+  <h3 class="t-title">{title}</h3>
+  {description && <p class="t-caption c-secondary mt-sm" style="max-width:20rem">{description}</p>}
+  {actionLabel && actionId && (
+    <button id={actionId} class="btn btn-primary mt-md">{actionLabel}</button>
+  )}
+</div>

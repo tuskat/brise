@@ -1,0 +1,10 @@
+{
+  "format": "csv",
+  "type": "suggestion",
+  "suggestions": [
+    "First row must be a header row",
+    "Use commas as delimiters",
+    "Quote fields containing commas or newlines",
+    "No trailing comma per row"
+  ]
+}

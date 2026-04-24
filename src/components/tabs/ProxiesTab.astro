@@ -1,0 +1,80 @@
+---
+---
+<div id="proxies-view" class="m-10 js-hidden">
+  <div class="row-between flex-wrap gap-lg">
+    <div>
+      <h2 class="t-hero">Proxy Backends</h2>
+      <p class="t-subtitle">Configure LLM backends for routing requests</p>
+    </div>
+    <button id="new-proxy-btn" class="btn btn-primary">+ Add Proxy</button>
+  </div>
+
+  <div id="proxies-list" class="flex-col gap-md mt-lg">
+    <p class="placeholder">Loading proxies...</p>
+  </div>
+</div>
+
+ <!-- Create / Edit Modal -->
+  <div id="proxy-form-modal" class="modal">
+    <div class="modal-card">
+      <div class="row-between mb-md">
+        <h2 id="proxy-form-title" class="t-section-title">New Proxy</h2>
+        <button id="proxy-form-close" class="modal-close" aria-label="Close">&times;</button>
+      </div>
+      <form id="proxy-form" class="flex-col gap-md">
+        <div class="flex-col gap-xs">
+          <label for="px-name" class="label">Name</label>
+          <input id="px-name" type="text" class="input" placeholder="e.g. Ollama Local" required />
+        </div>
+        <div class="flex-col gap-xs">
+          <label for="px-url" class="label">URL</label>
+          <input id="px-url" type="text" class="input" placeholder="http://192.168.1.100:11434/api/generate" required />
+          <span id="px-url-hint" class="t-caption c-tertiary">Full URL to the LLM API endpoint</span>
+        </div>
+        <div class="flex-col gap-xs">
+          <label for="px-schema" class="label">API Schema</label>
+          <select id="px-schema" class="input input-select">
+            <option value="ollama">Ollama (Native)</option>
+            <option value="openai">OpenAI-Compatible</option>
+          </select>
+          <span class="t-caption c-tertiary">Ollama for local; OpenAI-compatible for Groq, LM Studio, etc.</span>
+        </div>
+        <div class="flex-col gap-xs">
+          <label for="px-model" class="label">Model</label>
+          <input id="px-model" type="text" class="input" placeholder="gemma4:e2b" required />
+          <span class="t-caption c-tertiary">Default model to use with this proxy</span>
+        </div>
+        <div class="flex-col gap-sm">
+          <label class="flex-row gap-sm t-body c-primary cursor-pointer">
+            <input id="px-local" type="checkbox" checked />
+            <span>Local Network (no API key required)</span>
+          </label>
+          <span class="t-caption c-tertiary">Enable for local Ollama instances. Disable for cloud providers like OpenAI.</span>
+        </div>
+        <div id="api-key-field" class="flex-col gap-xs js-hidden">
+          <label for="px-apikey" class="label">API Key</label>
+          <input id="px-apikey" type="password" class="input" placeholder="sk-..." />
+          <span class="t-caption c-warning">⚠️ API keys stored in plaintext. Do not expose this app to the internet.</span>
+        </div>
+        <div class="flex-row gap-sm flex-wrap">
+          <button type="button" id="test-proxy-btn" class="btn btn-secondary" style="margin-right:auto">Test Connection</button>
+          <button type="submit" class="btn btn-primary" id="proxy-form-submit">Create Proxy</button>
+          <button type="button" class="btn btn-secondary" id="proxy-form-cancel">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div id="proxy-delete-modal" class="modal">
+    <div class="modal-card modal-card-sm">
+      <h2 class="t-section-title">Delete Proxy</h2>
+      <p class="t-body c-secondary" style="margin:0.75rem 0 0">
+        Are you sure you want to delete <strong id="delete-proxy-name"></strong>? This cannot be undone.
+      </p>
+      <div class="flex-row gap-sm self-end mt-sm flex-wrap">
+        <button id="confirm-proxy-delete-btn" class="btn btn-danger-fill">Delete</button>
+        <button id="cancel-proxy-delete-btn" class="btn btn-secondary">Cancel</button>
+      </div>
+    </div>
+  </div>

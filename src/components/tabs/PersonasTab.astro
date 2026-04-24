@@ -1,0 +1,74 @@
+---
+---
+<div id="personas-view" class="m-10 js-hidden">
+  <div class="row-between flex-wrap gap-lg">
+    <div>
+      <h2 class="t-hero">Personas</h2>
+      <p class="t-subtitle">Configure AI behaviors and system prompts</p>
+    </div>
+    <button id="new-persona-btn" class="btn btn-primary">+ New Persona</button>
+  </div>
+
+  <div id="personas-list" class="flex-col gap-md mt-lg">
+    <p class="placeholder">Loading personas...</p>
+  </div>
+
+ 
+</div>
+
+ <!-- Create / Edit Modal -->
+  <div id="persona-form-modal" class="modal">
+    <div class="modal-card">
+      <div class="row-between mb-md">
+        <h2 id="persona-form-title" class="t-section-title">New Persona</h2>
+        <button id="persona-form-close" class="modal-close" aria-label="Close">&times;</button>
+      </div>
+      <form id="persona-form" class="flex-col gap-md">
+        <div class="flex-col gap-xs">
+          <label for="pf-id" class="label">ID</label>
+          <input id="pf-id" type="text" class="input" placeholder="e.g. code-reviewer" pattern="[a-z0-9-]+" />
+          <span class="t-caption c-tertiary">Lowercase letters, numbers, hyphens. Cannot be changed after creation.</span>
+        </div>
+        <div class="flex-col gap-xs">
+          <label for="pf-name" class="label">Name</label>
+          <input id="pf-name" type="text" class="input" placeholder="e.g. Code Reviewer" required />
+        </div>
+        <div class="flex-col gap-xs">
+          <label for="pf-prompt" class="label">System Prompt</label>
+          <textarea id="pf-prompt" rows="5" class="input input-textarea" placeholder="Define the persona's behavior..." required></textarea>
+        </div>
+        <div class="flex-row gap-md">
+          <div class="flex-col gap-xs flex-1">
+            <label for="pf-temp" class="label">Temperature</label>
+            <input id="pf-temp" type="number" class="input" min="0" max="2" step="0.1" value="0.7" />
+          </div>
+          <div class="flex-col gap-xs flex-1">
+            <label for="pf-topp" class="label">Top P</label>
+            <input id="pf-topp" type="number" class="input" min="0" max="1" step="0.05" value="0.9" />
+          </div>
+          <div class="flex-col gap-xs flex-1">
+            <label for="pf-maxtokens" class="label">Max Tokens</label>
+            <input id="pf-maxtokens" type="number" class="input" min="100" max="8000" step="100" value="2000" />
+          </div>
+        </div>
+        <div class="flex-row gap-sm self-end mt-sm flex-wrap">
+          <button type="submit" class="btn btn-primary" id="persona-form-submit">Create Persona</button>
+          <button type="button" class="btn btn-secondary" id="persona-form-cancel">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div id="persona-delete-modal" class="modal">
+    <div class="modal-card modal-card-sm">
+      <h2 class="t-section-title">Delete Persona</h2>
+      <p class="t-body c-secondary" style="margin:0.75rem 0 0">
+        Are you sure you want to delete <strong id="delete-persona-name"></strong>? This cannot be undone.
+      </p>
+      <div class="flex-row gap-sm self-end mt-sm flex-wrap">
+        <button id="confirm-delete-btn" class="btn btn-danger-fill">Delete</button>
+        <button id="cancel-delete-btn" class="btn btn-secondary">Cancel</button>
+      </div>
+    </div>
+  </div>

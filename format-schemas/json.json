@@ -1,0 +1,10 @@
+{
+  "format": "json",
+  "type": "suggestion",
+  "suggestions": [
+    "Output must be valid JSON (parseable)",
+    "Use double quotes for keys and string values",
+    "No trailing commas",
+    "Structure should be a JSON object or array"
+  ]
+}

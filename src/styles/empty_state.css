@@ -1,0 +1,14 @@
+/* ═══════════════════════════════════════════════════════════════
+   EMPTY STATE
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Only the icon needs a unique rule for sizing */
+.empty-state-icon {
+  width: 4rem;
+  height: 4rem;
+}
+
+.empty-state-icon svg {
+  width: 100%;
+  height: 100%;
+}

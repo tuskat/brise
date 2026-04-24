@@ -1,0 +1,128 @@
+---
+---
+<div id="playground-view" class="flex-col gap-lg m-10 js-hidden">
+    <div class="row-between flex-wrap gap-lg">
+    <div>
+      <h2 class="t-hero">Playground</h2>
+      <p class="t-subtitle">Make customize singular or batch calls</p>
+    </div>
+  </div>
+  <!-- Selectors Row -->
+  <div class="flex-row gap-lg flex-wrap">
+    <div class="flex-col gap-sm pg-field-sm">
+      <label for="pg-persona-select" class="label label-sm">Persona</label>
+      <select id="pg-persona-select" class="input input-select">
+        <option value="">Default (No Persona)</option>
+      </select>
+    </div>
+    <div class="flex-col gap-sm pg-field-sm">
+      <label for="pg-proxy-select" class="label label-sm">Proxy</label>
+      <select id="pg-proxy-select" class="input input-select">
+        <option value="">Loading...</option>
+      </select>
+    </div>
+    <div class="flex-col gap-sm pg-field-sm">
+      <label for="pg-format-select" class="label label-sm">Format</label>
+      <select id="pg-format-select" class="input input-select">
+        <option value="">Free text</option>
+        <option value="md">Markdown (.md)</option>
+        <option value="html">HTML (.html)</option>
+        <option value="json">JSON (.json)</option>
+        <option value="json-strict">JSON Strict (.json)</option>
+        <option value="csv">CSV (.csv)</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Format Info Hint -->
+  <div id="pg-format-info" class="bg-tertiary border rounded-sm t-caption c-secondary mt-sm p-sm js-hidden">
+    <span id="pg-format-info-text"></span>
+  </div>
+
+  <!-- Quantity Controls (shown when format is selected) -->
+  <div id="pg-quantity-controls" class="flex-row gap-lg flex-wrap js-hidden" style="margin-top:0.25rem">
+    <div class="flex-col gap-sm pg-field-xs">
+      <label for="pg-files-per-call" class="label label-sm">Files per call</label>
+      <select id="pg-files-per-call" class="input input-select">
+        <option value="1" selected>1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+        <option value="9">9</option>
+        <option value="10">10</option>
+      </select>
+    </div>
+    <div class="flex-col gap-sm pg-field-xs">
+      <label for="pg-calls" class="label label-sm">Calls</label>
+      <select id="pg-calls" class="input input-select">
+        <option value="1" selected>1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+        <option value="7">7</option>
+        <option value="8">8</option>
+        <option value="9">9</option>
+        <option value="10">10</option>
+        <option value="15">15</option>
+        <option value="20">20</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Prompt Input -->
+  <div class="flex-col gap-sm">
+    <label for="pg-prompt" class="label label-sm">Prompt</label>
+    <textarea
+      id="pg-prompt"
+      rows="6"
+      class="input input-textarea"
+      style="min-height:150px"
+      placeholder="Enter your prompt here..."
+    ></textarea>
+  </div>
+
+  <!-- Send Button -->
+  <button id="pg-send-btn" class="btn btn-primary btn-lg self-start">
+    Run
+  </button>
+
+  <!-- Response Container -->
+  <div id="pg-response-container" class="card pg-response mt-md js-hidden">
+    <div class="row-between mb-md pb-md border-b pg-response-header">
+      <h2 id="pg-response-title" class="label">Response</h2>
+      <div class="flex-row gap-md">
+        <span id="pg-response-meta" class="t-caption-mono c-tertiary"></span>
+        <button id="pg-download-btn" class="btn btn-primary btn-sm js-hidden">Download</button>
+      </div>
+    </div>
+    <div id="pg-response-text" class="text-block"></div>
+    <div id="pg-multi-files" class="flex-col gap-md js-hidden" style="margin-top:0.5rem"></div>
+  </div>
+
+  <!-- Progress Container for batched calls -->
+  <div id="pg-progress-container" class="mt-md js-hidden">
+    <span id="pg-progress-text" class="t-caption c-tertiary mb-sm"></span>
+    <div class="pg-progress-bar"><div id="pg-progress-fill" class="pg-progress-fill"></div></div>
+  </div>
+
+  <!-- Error Container -->
+  <div id="pg-error-container" class="mt-md p-md border rounded bg-error js-hidden">
+    <h2 class="t-label c-error m-0 mb-sm">Error</h2>
+    <p id="pg-error-text" class="m-0 c-error t-body"></p>
+  </div>
+</div>
+
+<script>
+  import { initPlaygroundView } from '../../utils/playground-init.js';
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initPlaygroundView);
+  } else {
+    initPlaygroundView();
+  }
+</script>

@@ -1,0 +1,79 @@
+/* ═══════════════════════════════════════════════════════════════
+   THEME TOKENS
+   ═══════════════════════════════════════════════════════════════ */
+:root {
+  /* Dark mode (default) */
+  --bg-primary: #0d0f12;
+  --bg-secondary: #15171b;
+  --bg-tertiary: #1e2025;
+  --bg-surface: #15171b;
+  --bg-hover: #1e2025;
+  --bg-input: #0d0f12;
+
+  --text-primary: #e4e4e7;
+  --text-secondary: #a1a1aa;
+  --text-tertiary: #71717a;
+  --text-inverse: #0d0f12;
+
+  --border-primary: #27272a;
+  --border-secondary: #3f3f46;
+
+  --accent: #a78bfa;
+  --accent-hover: #c4b5fd;
+  --accent-muted: rgba(167, 139, 250, 0.15);
+
+  --success: #86efac;
+  --success-bg: rgba(134, 239, 172, 0.1);
+  --success-text: #86efac;
+
+  --error: #fca5a5;
+  --error-bg: rgba(252, 165, 165, 0.1);
+  --error-text: #fca5a5;
+
+  --warning: #fcd34d;
+  --warning-bg: rgba(252, 211, 77, 0.1);
+  --warning-text: #fcd34d;
+
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.4), 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-modal: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+
+  color-scheme: dark;
+}
+
+:root.js-light {
+  --bg-primary: #fafafa;
+  --bg-secondary: #f4f4f5;
+  --bg-tertiary: #e4e4e7;
+  --bg-surface: #ffffff;
+  --bg-hover: #e4e4e7;
+  --bg-input: #fafafa;
+
+  --text-primary: #18181b;
+  --text-secondary: #52525b;
+  --text-tertiary: #a1a1aa;
+  --text-inverse: #fafafa;
+
+  --border-primary: #e4e4e7;
+  --border-secondary: #d4d4d8;
+
+  --accent: #7c3aed;
+  --accent-hover: #6d28d9;
+  --accent-muted: rgba(124, 58, 237, 0.1);
+
+  --success: #16a34a;
+  --success-bg: rgba(22, 163, 74, 0.08);
+  --success-text: #16a34a;
+
+  --error: #dc2626;
+  --error-bg: rgba(220, 38, 38, 0.08);
+  --error-text: #dc2626;
+
+  --warning: #ca8a04;
+  --warning-bg: rgba(202, 138, 4, 0.08);
+  --warning-text: #ca8a04;
+
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-modal: 0 25px 50px -12px rgba(0, 0, 0, 0.2);
+
+  color-scheme: light;
+}

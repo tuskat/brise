@@ -1,0 +1,52 @@
+---
+
+---
+
+<div id="history-view" class="flex-col gap-lg m-10 js-hidden">
+  <!-- List view (header + list + export) -->
+  <div id="history-list-view">
+    <div class="row-between flex-wrap gap-lg">
+      <div>
+        <h2 class="t-hero">History</h2>
+        <p class="t-subtitle">View and export past interactions</p>
+      </div>
+      <div class="flex-row gap-sm">
+        <a href="/api/export?format=json" download class="btn btn-export"
+          >↓ Export JSON</a
+        >
+        <a href="/api/export?format=csv" download class="btn btn-export"
+          >↓ Export CSV</a
+        >
+      </div>
+    </div>
+
+    <div id="history-list" class="flex-col gap-md mt-lg">
+      <p class="placeholder">Loading history...</p>
+    </div>
+  </div>
+
+  <!-- Detail view (inline, replaces list when visible) -->
+  <div id="history-detail-view" class="js-hidden">
+    <div class="flex-col gap-md">
+      <div class="flex-row gap-md items-baseline">
+        <button
+          id="back-to-history-btn"
+          class="btn btn-secondary btn-sm w-fit-content">← Back</button
+        >
+        <h2 class="t-section-title">Interaction Detail</h2>
+      </div>
+      <div id="detail-content" class="flex-col gap-md">
+        <!-- Content injected dynamically -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { initHistoryView } from "../../utils/history-state.js";
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initHistoryView);
+  } else {
+    initHistoryView();
+  }
+</script>

@@ -1,0 +1,23 @@
+---
+import Layout from '../layouts/Layout.astro';
+import DashboardTab from '../components/tabs/DashboardTab.astro';
+import ChatTab from '../components/tabs/ChatTab.astro';
+import PlaygroundTab from '../components/tabs/PlaygroundTab.astro';
+import HistoryTab from '../components/tabs/HistoryTab.astro';
+import PersonasTab from '../components/tabs/PersonasTab.astro';
+import ProxiesTab from '../components/tabs/ProxiesTab.astro';
+---
+
+<Layout title="Gemma Control Center">
+  <DashboardTab />
+  <ChatTab />
+  <PlaygroundTab />
+  <HistoryTab />
+  <PersonasTab />
+  <ProxiesTab />
+</Layout>
+
+<script>
+  import { initTabNav } from '../utils/tab-nav.js';
+  initTabNav();
+</script>

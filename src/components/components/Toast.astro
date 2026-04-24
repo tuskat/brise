@@ -1,0 +1,51 @@
+---
+---
+<div id="toast-container" class="toast-container"></div>
+
+<script>
+  const container = document.getElementById('toast-container');
+  
+  type ToastVariant = 'success' | 'error' | 'warning' | 'info';
+  
+  interface ToastOptions {
+    message: string;
+    variant?: ToastVariant;
+    duration?: number;
+  }
+  
+  export function showToast(options: ToastOptions) {
+    const { message, variant = 'info', duration = 4000 } = options;
+    
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${variant}`;
+    toast.innerHTML = `
+      <span class="toast-message">${message}</span>
+      <button class="toast-close" aria-label="Dismiss">&times;</button>
+    `;
+    
+    container?.appendChild(toast);
+    
+    // Trigger animation
+    requestAnimationFrame(() => {
+      toast.classList.add('js-toast-visible');
+    });
+    
+    // Close button
+    const closeBtn = toast.querySelector('.toast-close');
+    closeBtn?.addEventListener('click', () => dismissToast(toast));
+    
+    // Auto dismiss
+    if (duration > 0) {
+      setTimeout(() => dismissToast(toast), duration);
+    }
+  }
+  
+  function dismissToast(toast: HTMLElement) {
+    toast.classList.remove('js-toast-visible');
+    toast.classList.add('js-toast-dismissing');
+    setTimeout(() => toast.remove(), 200);
+  }
+  
+  // Expose globally
+  (window as any).showToast = showToast;
+</script>

@@ -1,0 +1,61 @@
+---
+---
+<div id="welcome-modal" class="modal welcome-modal js-hidden">
+  <div class="welcome-modal-card">
+    <div style="font-size:3rem;margin-bottom:1rem">⚠️</div>
+    <h1 class="t-hero c-warning">Security Notice</h1>
+    <p class="t-title c-secondary t-weight-500" style="margin:0 0 1.5rem">Gemma-Control-Center is designed for LOCAL NETWORK use only.</p>
+    
+    <div class="welcome-modal-warning">
+      <p class="c-warning t-weight-600 t-caption m-0 mb-sm">
+        Exposing this application to the public internet may result in:
+      </p>
+      <ul class="welcome-modal-list c-primary t-caption">
+        <li>Unauthorized access to your LLM backends</li>
+        <li>API key theft (stored in plaintext)</li>
+        <li>Prompt injection attacks</li>
+        <li>Resource abuse (running up API costs)</li>
+      </ul>
+    </div>
+    
+    <p class="c-secondary t-caption mb-md">
+      Only deploy on trusted networks. Use a VPN or reverse proxy with authentication if remote access is required.
+    </p>
+    
+    <button id="welcome-acknowledge-btn" class="btn btn-primary btn-lg">
+      I understand — Continue
+    </button>
+  </div>
+</div>
+
+<script is:inline>
+  (function() {
+    const STORAGE_KEY = 'gcc_welcomed';
+    
+    function checkWelcome() {
+      const modal = document.getElementById('welcome-modal');
+      if (!modal) return;
+      if (localStorage.getItem(STORAGE_KEY) === 'true') {
+        modal.classList.add('js-hidden');
+      } else {
+        modal.classList.remove('js-hidden');
+      }
+    }
+    
+    document.addEventListener('DOMContentLoaded', function() {
+      checkWelcome();
+      var btn = document.getElementById('welcome-acknowledge-btn');
+      if (btn) {
+        btn.addEventListener('click', function() {
+          localStorage.setItem(STORAGE_KEY, 'true');
+          var modal = document.getElementById('welcome-modal');
+          if (modal) modal.classList.add('js-hidden');
+        });
+      }
+      window.showWelcomeModal = function() {
+        var modal = document.getElementById('welcome-modal');
+        if (modal) modal.classList.remove('js-hidden');
+      };
+    });
+  })();
+</script>

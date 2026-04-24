@@ -1,0 +1,5 @@
+{
+  "format": "md",
+  "type": "template",
+  "template": "# {{title}}\n\n## Overview\n{{overview}}\n\n## Details\n{{details}}\n\n## Conclusion\n{{conclusion}}"
+}
