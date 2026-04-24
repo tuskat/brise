@@ -1,13 +1,13 @@
 ---
-title: Gemma Control Center
+title: Brise
 description: Documentation for the self-hosted AI observability platform.
 ---
 
-Welcome to the **Gemma Control Center** documentation.
+Welcome to the **Brise** documentation.
 
-GCC is a self-hosted AI observability platform that proxies and orchestrates multiple LLM backends through a persona-driven interface.
+Brise is a self-hosted AI observability platform that proxies and orchestrates multiple LLM backends through a persona-driven interface.
 
-## What is GCC?
+## What is Brise?
 
 - **Multi-Proxy Support** — Configure and switch between multiple LLM backends
 - **Persona System** — Pre-configured system prompts with hyperparameter tuning
@@ -18,6 +18,7 @@ GCC is a self-hosted AI observability platform that proxies and orchestrates mul
 ## Quick Links
 
 - [Getting Started](/getting-started)
+- [Configuration](/configuration)
 - [Configuration](/configuration)
 - [Deployment](/deployment)
 - [API Reference](/api-overview)

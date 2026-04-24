@@ -300,7 +300,7 @@ export function renderDetailView(item, detailContent, detailView, onDownload) {
     formatSection =
       '<div class="flex-col gap-xs">' +
         '<h3 class="label label-sm">Format</h3>' +
-        '<p class="detail-value"><span class="badge badge-caps badge-accent">' + escapeHtml(item.format) + '</span></p>' +
+        '<p class="t-body c-primary"><span class="badge badge-caps badge-accent">' + escapeHtml(item.format) + '</span></p>' +
       '</div>';
 
     const filesCount = item.files_count || 1;

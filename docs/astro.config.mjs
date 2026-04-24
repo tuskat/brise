@@ -6,10 +6,10 @@ export default defineConfig({
 
   integrations: [
     starlight({
-      title: 'GCC Docs',
-      description: 'Documentation for Gemma Control Center',
+      title: 'Brise Docs',
+      description: 'Documentation for Brise',
       social: [
-        { icon: 'github', label: 'GitHub', href: 'https://github.com/your-org/gemma-control-center' },
+        { icon: 'github', label: 'GitHub', href: 'https://github.com/cedricmarcellin/brise' },
       ],
       sidebar: [
         {

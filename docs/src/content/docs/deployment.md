@@ -1,6 +1,6 @@
 ---
 title: Deployment
-description: Deploy GCC with Docker or manually.
+description: Deploy Brise with Docker or manually.
 ---
 
 ## Docker Compose (Recommended)
@@ -34,7 +34,7 @@ node dist/server/entry.mjs
 
 ## Reverse Proxy
 
-For HTTPS and authentication, place GCC behind Nginx or Traefik with basic auth.
+For HTTPS and authentication, place Brise behind Nginx or Traefik with basic auth.
 
 ```nginx
 server {
@@ -42,7 +42,7 @@ server {
     location / {
         proxy_pass http://localhost:4321;
         proxy_http_version 1.1;
-        auth_basic "GCC";
+        auth_basic "Brise";
         auth_basic_user_file /etc/nginx/.htpasswd;
     }
 }

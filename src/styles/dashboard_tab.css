@@ -116,6 +116,7 @@
 
 /* Activity List */
 .activity-item {
+  display: flex;
   gap: 1rem;
   padding: 1rem 1.25rem;
   border-left: 4px solid transparent;

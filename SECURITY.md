@@ -2,7 +2,7 @@
 
 ## Intended Use Case
 
-Gemma-Control-Center is designed for **local network access only**:
+Brise is designed for **local network access only**:
 - Home server or NAS deployment
 - Development machine
 - Trusted network environment
@@ -89,4 +89,4 @@ Before deploying:
 
 ## Reporting Security Issues
 
-If you discover a security vulnerability, please **do not** open a public GitHub issue. Instead, open a [GitHub Security Advisory](https://github.com/cedricmarcellin/gemma-control-center/security/advisories/new) or email the maintainer. We aim to respond within 48 hours.
+If you discover a security vulnerability, please **do not** open a public GitHub issue. Instead, open a [GitHub Security Advisory](https://github.com/cedricmarcellin/brise/security/advisories/new) or email the maintainer. We aim to respond within 48 hours.

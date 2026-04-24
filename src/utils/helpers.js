@@ -1,5 +1,5 @@
 /**
- * Shared helper utilities for the Gemma Control Center frontend.
+ * Shared helper utilities for the Brise frontend.
  * No DOM dependencies — pure functions only.
  */
 

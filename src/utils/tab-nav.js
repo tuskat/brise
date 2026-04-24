@@ -90,7 +90,7 @@ function refreshAllDropdowns() {
 
 function switchTab(tab) {
   currentTab = tab;
-  localStorage.setItem('gcc_active_tab', tab);
+  localStorage.setItem('brise_active_tab', tab);
 
   const refs = getRefs();
 
@@ -206,7 +206,7 @@ export function initTabNav() {
   if (window.loadPlaygroundDropdowns) window.loadPlaygroundDropdowns();
 
   // Restore saved tab or default to dashboard
-  const savedTab = localStorage.getItem('gcc_active_tab');
+  const savedTab = localStorage.getItem('brise_active_tab');
   if (savedTab && ['dashboard','chat','playground','history','personas','proxies'].includes(savedTab)) {
     switchTab(savedTab);
   } else {

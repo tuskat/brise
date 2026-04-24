@@ -1,11 +1,11 @@
 ---
 title: Architecture
-description: High-level system architecture of GCC.
+description: High-level system architecture of Brise.
 ---
 
 ## System Pattern
 
-GCC follows a **"Centralized Proxy & Observability"** pattern:
+Brise follows a **"Centralized Proxy & Observability"** pattern:
 
 - **The Controller (The App):** Dockerized web app running on your NAS. Orchestrates prompts, manages settings, logs results.
 - **The Workers (The LLMs):** External nodes (Ollama via IP, NVIDIA NIM, cloud APIs) receiving standardized requests.
@@ -26,7 +26,7 @@ GCC follows a **"Centralized Proxy & Observability"** pattern:
 
 | Layer | Technology |
 |-------|------------|
-| Frontend | Astro 6 + Vue 3 + Tailwind CSS |
+| Frontend | Astro 6 + Vanilla JS + CSS custom properties |
 | Backend | Node.js (Astro SSR) |
 | Database | SQLite |
 | Runtime | Docker |

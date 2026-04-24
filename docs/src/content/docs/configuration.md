@@ -1,6 +1,6 @@
 ---
 title: Configuration
-description: Configure proxies and personas for GCC.
+description: Configure proxies and personas for Brise.
 ---
 
 ## Proxies
@@ -14,7 +14,7 @@ Proxy configurations live in `/proxies/*.json`. Each proxy defines a connection 
   "id": "ollama-local",
   "name": "Ollama Local",
   "url": "http://192.168.1.100:11434/api/generate",
-  "model": "gemma4:e2b",
+  "model": "your-model",
   "is_local_network": true,
   "api_key": null
 }

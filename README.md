@@ -1,4 +1,4 @@
-# Gemma-Control-Center
+# Brise
 
 A self-hosted AI observability platform for proxying and orchestrating multiple LLM backends through a persona-driven interface.
 
@@ -48,7 +48,7 @@ Proxy configurations live in `/proxies/*.json`. Example:
   "id": "ollama-local",
   "name": "Ollama Local",
   "url": "http://192.168.1.100:11434/api/generate",
-  "model": "gemma4:e2b",
+  "model": "your-model",
   "is_local_network": true,
   "api_key": null
 }
@@ -116,4 +116,4 @@ Internal project documentation (architecture specs, phase roadmaps, conventions,
 
 ## License
 
-MIT License — see [LICENSE](LICENSE) for details.
+CC BY-NC-SA 4.0 — see [LICENSE](LICENSE) for details.

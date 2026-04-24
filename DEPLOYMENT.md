@@ -49,17 +49,17 @@ docker-compose down
 
 ```bash
 # Build image
-docker build -t gemma-control-center .
+docker build -t brise .
 
 # Run container
 docker run -d \
-  --name gcc \
+  --name brise \
   -p 4321:4321 \
   -v $(pwd)/data:/app/data \
   -v $(pwd)/personas:/app/personas \
   -v $(pwd)/proxies:/app/proxies \
   -e NODE_ENV=production \
-  gemma-control-center
+  brise
 ```
 
 ## NAS Deployment
@@ -96,7 +96,7 @@ For HTTPS and authentication:
 # Nginx example
 server {
     listen 443 ssl;
-    server_name gcc.yourdomain.com;
+    server_name brise.yourdomain.com;
 
     ssl_certificate /path/to/cert.pem;
     ssl_certificate_key /path/to/key.pem;
@@ -110,7 +110,7 @@ server {
     }
     
     # Add basic auth
-    auth_basic "GCC Access";
+    auth_basic "Brise Access";
     auth_basic_user_file /path/to/.htpasswd;
 }
 ```
@@ -119,10 +119,10 @@ server {
 
 ```bash
 # Backup data directory
-tar -czf gcc-backup.tar.gz data/ personas/ proxies/
+tar -czf brise-backup.tar.gz data/ personas/ proxies/
 
 # Restore
-tar -xzf gcc-backup.tar.gz
+tar -xzf brise-backup.tar.gz
 ```
 
 ### Updating
@@ -152,7 +152,7 @@ ls -la data/ personas/ proxies/
 Ensure Ollama is accessible from container:
 ```bash
 # Check network
-docker exec -it gcc curl http://host.docker.internal:11434/api/tags
+docker exec -it brise curl http://host.docker.internal:11434/api/tags
 ```
 
 ### Permission issues

@@ -1,6 +1,6 @@
 ---
 title: Getting Started
-description: Install and run Gemma Control Center locally.
+description: Install and run Brise locally.
 ---
 
 ## Prerequisites
@@ -13,7 +13,7 @@ description: Install and run Gemma Control Center locally.
 ```bash
 # Clone the repository
 git clone <repo-url>
-cd gemma-control-center
+cd brise
 
 # Install dependencies
 npm install

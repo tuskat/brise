@@ -1,6 +1,6 @@
 ---
 title: API Overview
-description: REST API reference for GCC.
+description: REST API reference for Brise.
 ---
 
 All API responses follow this envelope:

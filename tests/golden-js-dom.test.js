@@ -175,8 +175,8 @@ describe('chat-dom.js — message HTML class strings', () => {
 describe('dashboard-state.js — activity HTML class strings', () => {
   const js = readUtil('dashboard-state.js');
 
-  it('activity item uses activity-item flex-row', () => {
-    expect(js).toContain('activity-item flex-row');
+  it('activity item uses activity-item activity-item-clickable flex-row', () => {
+    expect(js).toContain('activity-item activity-item-clickable flex-row');
   });
 
   it('success item uses activity-success', () => {
@@ -242,8 +242,8 @@ describe('playground-dom.js — history and detail class strings', () => {
     expect(js).toContain('label label-sm');
   });
 
-  it('detail value uses detail-value', () => {
-    expect(js).toContain('detail-value');
+  it('detail value uses t-body c-primary', () => {
+    expect(js).toContain('t-body c-primary');
   });
 
   it('download buttons row uses flex-row gap-sm flex-wrap', () => {
@@ -292,8 +292,8 @@ describe('JS class strings have matching CSS rules', () => {
     'activity-status', 'activity-time', 'activity-persona', 'activity-latency',
     // History
     'history-item',
-    // Detail
-    'detail-value',
+    // Detail (detail-value removed, now uses t-body c-primary)
+    't-body',
     // Stat
     'stat-value',
   ];

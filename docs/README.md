@@ -1,8 +1,8 @@
-# GCC Docs
+# Brise Docs
 
-Standalone Starlight documentation site for the Gemma Control Center.
+Standalone Starlight documentation site for Brise.
 
-This is a **separate Astro build** from the main GCC app. It produces a static site that can be served independently or alongside the main app.
+This is a **separate Astro build** from the main Brise app. It produces a static site that can be served independently or alongside the main app.
 
 ## Quick Start
 

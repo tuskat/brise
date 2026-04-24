@@ -9,6 +9,7 @@
   --bg-surface: #15171b;
   --bg-hover: #1e2025;
   --bg-input: #0d0f12;
+  --bg-waves: #112f271a;
 
   --text-primary: #e4e4e7;
   --text-secondary: #a1a1aa;
@@ -18,9 +19,9 @@
   --border-primary: #27272a;
   --border-secondary: #3f3f46;
 
-  --accent: #a78bfa;
-  --accent-hover: #c4b5fd;
-  --accent-muted: rgba(167, 139, 250, 0.15);
+  --accent: #17957e;
+  --accent-hover: #a2e4d4;
+  --accent-muted: rgba(114, 212, 194, 0.15);
 
   --success: #86efac;
   --success-bg: rgba(134, 239, 172, 0.1);
@@ -41,24 +42,25 @@
 }
 
 :root.js-light {
-  --bg-primary: #fafafa;
-  --bg-secondary: #f4f4f5;
-  --bg-tertiary: #e4e4e7;
-  --bg-surface: #ffffff;
-  --bg-hover: #e4e4e7;
-  --bg-input: #fafafa;
+  --bg-primary: #f0ede8;
+  --bg-secondary: #e8e4de;
+  --bg-tertiary: #ddd9d3;
+  --bg-surface: #f5f2ed;
+  --bg-hover: #ddd9d3;
+  --bg-input: #f0ede8;
+  --bg-waves: #e6ebe7;
 
   --text-primary: #18181b;
-  --text-secondary: #52525b;
-  --text-tertiary: #a1a1aa;
+  --text-secondary: #3f3f46;
+  --text-tertiary: #71717a;
   --text-inverse: #fafafa;
 
-  --border-primary: #e4e4e7;
-  --border-secondary: #d4d4d8;
+  --border-primary: #c8c4be;
+  --border-secondary: #b5b0a8;
 
-  --accent: #7c3aed;
-  --accent-hover: #6d28d9;
-  --accent-muted: rgba(124, 58, 237, 0.1);
+  --accent: #22a898;
+  --accent-hover: #148880;
+  --accent-muted: rgba(34, 168, 152, 0.1);
 
   --success: #16a34a;
   --success-bg: rgba(22, 163, 74, 0.08);

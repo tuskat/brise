@@ -1,4 +1,4 @@
-# Contributing to Gemma-Control-Center
+# Contributing to Brise
 
 Thanks for your interest! Here's how to get started.
 
@@ -6,8 +6,8 @@ Thanks for your interest! Here's how to get started.
 
 ```bash
 # Clone and install
-git clone https://github.com/cedricmarcellin/gemma-control-center.git
-cd gemma-control-center
+git clone https://github.com/cedricmarcellin/brise.git
+cd brise
 npm install
 
 # Start dev server
@@ -37,7 +37,7 @@ npm test
 
 ## Reporting Bugs
 
-Open a [GitHub Issue](https://github.com/cedricmarcellin/gemma-control-center/issues) with:
+Open a [GitHub Issue](https://github.com/cedricmarcellin/brise/issues) with:
 
 - What you expected to happen
 - What actually happened
@@ -50,4 +50,4 @@ Open a [GitHub Issue](https://github.com/cedricmarcellin/gemma-control-center/is
 
 ## License
 
-By contributing, you agree that your changes will be licensed under the [MIT License](LICENSE).
+By contributing, you agree that your changes will be licensed under the [CC BY-NC-SA 4.0](LICENSE).

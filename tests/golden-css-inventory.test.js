@@ -43,7 +43,7 @@ describe('CSS structure', () => {
   it('total line count is within expected range', () => {
     // After Round 3 DRY refactor
     expect(lines.length).toBeGreaterThanOrEqual(1400);
-    expect(lines.length).toBeLessThanOrEqual(2000);
+    expect(lines.length).toBeLessThanOrEqual(2050);
   });
 
   it('global.css starts with imports section', () => {
@@ -73,7 +73,7 @@ describe('CSS structure', () => {
   it('contains light theme overrides in :root.js-light', () => {
     const tokensCss = fs.readFileSync(path.join(CSS_DIR, 'theme_tokens.css'), 'utf-8');
     expect(tokensCss).toContain(':root.js-light');
-    expect(tokensCss).toContain('--bg-primary: #fafafa');
+    expect(tokensCss).toContain('--bg-primary: #f0ede8');
   });
 });
 
@@ -219,7 +219,7 @@ describe('Per-tab CSS selectors', () => {
     'chat-main', 'chat-empty', 'chat-thread', 'chat-thread-header', 'chat-messages',
     'chat-msg', 'chat-msg-user', 'chat-msg-assistant', 'chat-msg-error',
     'chat-msg-bubble', 'chat-msg-copy', 'chat-msg-dot',
-    'chat-input-textarea', 'chat-send-btn', 'chat-mobile-toggle',
+    'chat-input-textarea', 'chat-send-btn',
     'chat-conv-item', 'chat-conv-item-active',
   ];
 

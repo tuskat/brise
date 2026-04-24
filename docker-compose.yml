@@ -1,11 +1,11 @@
 version: '3.8'
 
 services:
-  gemma-control-center:
+  brise:
     build: .
-    container_name: gcc
+    container_name: brise
     ports:
-      - "4321:4321"   # Main GCC dashboard (SSR)
+      - "4321:4321"   # Main Brise dashboard (SSR)
       - "4322:4322"   # Docs site (static)
     volumes:
       - ./data:/app/data           # SQLite database persistence

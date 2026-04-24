@@ -1,4 +1,4 @@
-# ── Stage 1: Build the main GCC app (SSR) ─────────────────────────
+# ── Stage 1: Build the main Brise app (SSR) ─────────────────────────
 FROM node:20-alpine AS builder-app
 WORKDIR /app
 COPY package*.json ./
