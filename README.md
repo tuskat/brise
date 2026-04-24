@@ -15,6 +15,20 @@ A self-hosted AI observability platform for proxying and orchestrating multiple 
 - **Request Logging** — SQLite-based history with metrics dashboard
 - **Production Dashboard** — Modern dark-mode UI with sidebar navigation, real-time stats, and charts
 
+## Screenshots
+
+| Dashboard | Chat |
+|-----------|------|
+| ![Dashboard](screenshots/dashboard.png) | ![Chat](screenshots/chat.png) |
+
+| Playground | Playground Results |
+|------------|-------------------|
+| ![Playground](screenshots/playground.png) | ![Playground Results](screenshots/playground-results.png) |
+
+| History | Personas | Proxies |
+|---------|----------|---------|
+| ![History](screenshots/history.png) | ![Personas](screenshots/personas.png) | ![Proxies](screenshots/proxies.png) |
+
 ## Tech Stack
 
 | Layer | Technology |
