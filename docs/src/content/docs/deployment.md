@@ -6,7 +6,7 @@ description: Deploy Brise with Docker or manually.
 ## Docker Compose (Recommended)
 
 ```bash
-docker-compose up -d
+docker compose up -d --build
 ```
 
 This starts the main app on port **4321** and the docs site on port **4322**.
@@ -28,21 +28,40 @@ This starts the main app on port **4321** and the docs site on port **4322**.
 | `NODE_ENV` | `production` | Environment mode |
 | `DATA_DIR` | `/app/data` | SQLite database directory |
 
-## Manual Build
+## Deploy Scripts
+
+| Script | Command | What it does |
+|--------|---------|-------------|
+| Smoke test | `npm run smoke` | Golden tests → Docker build → health-check all 8 endpoints |
+| Build image | `npm run build:image` | Docker build with git SHA label, optional cross-arch + push |
+| Generic deploy | `npm run deploy` | rsync to remote host → `docker compose up -d --build` |
+| Ugreen NAS | `npm run deploy:ugreen` | NAS-specific SSH deploy with Docker checks |
+
+### Cross-Architecture Build (e.g. x86 → ARM NAS)
+
+```bash
+PLATFORM=linux/arm64 npm run build:image
+```
+
+### Push to a Private Registry
+
+```bash
+REGISTRY=registry.local:5000 PUSH=true npm run build:image
+```
+
+## NAS Deployment
+
+Brise is designed for home-server and NAS deployments on trusted networks.
+
+- **[Ugreen NAS (UGOS Pro) →](ugreen-nas/)** — step-by-step for SSH or Docker GUI deploy
+- **Synology / QNAP / Unraid** — standard Docker Compose: install Docker via package manager, create container from `docker-compose.yml`, map volumes for `data/`, `personas/`, `proxies/`
+
+## Manual Build (No Docker)
 
 ```bash
 npm run build
 node dist/server/entry.mjs
 ```
-
-## NAS Deployment
-
-Brise is designed for home-server and NAS deployments on trusted networks. The Docker container works on Synology, QNAP, and Unraid:
-
-1. Install Docker via your NAS package manager
-2. Create a container from the `docker-compose.yml`
-3. Map volumes for `data/`, `personas/`, and `proxies/`
-4. Set restart policy to "Always"
 
 ## Reverse Proxy
 

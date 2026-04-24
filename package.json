@@ -10,7 +10,12 @@
     "preview": "astro preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:verbose": "vitest run --reporter=verbose"
+    "test:verbose": "vitest run --reporter=verbose",
+    "smoke": "./scripts/smoke-test.sh",
+    "build:image": "./scripts/build.sh",
+    "deploy": "./scripts/deploy.sh",
+    "deploy:ugreen": "./scripts/deploy-ugreen.sh",
+    "pull:base": "./scripts/pull-base-image.sh"
   },
   "dependencies": {
     "@astrojs/node": "^10.0.5",
