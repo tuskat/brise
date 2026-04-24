@@ -147,6 +147,13 @@ describe('Design system classes in HTML', () => {
     expect(html).toContain('modal-card');
   });
 
+  it('ChatTab has think-modal with think-modal-body', () => {
+    const html = readComponent('tabs/ChatTab.astro');
+    expect(html).toContain('id="think-modal"');
+    expect(html).toContain('id="think-modal-body"');
+    expect(html).toContain('id="think-modal-close"');
+  });
+
   it('All modals use t-section-title', () => {
     const html1 = readComponent('tabs/PersonasTab.astro');
     const html2 = readComponent('tabs/ProxiesTab.astro');

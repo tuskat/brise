@@ -70,6 +70,8 @@ export default {
   'chat.deleteConfirm': 'Are you sure you want to delete this conversation?',
   'chat.editTitle': 'Edit title',
   'chat.toggleConfig': 'Toggle config panel',
+  'chat.thinkTitle': 'AI Thoughts',
+  'chat.thinkTooltip': 'View thinking process',
 
   // ── Playground ──
   'pg.title': 'Playground',

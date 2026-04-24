@@ -219,6 +219,7 @@ describe('Per-tab CSS selectors', () => {
     'chat-main', 'chat-empty', 'chat-thread', 'chat-thread-header', 'chat-messages',
     'chat-msg', 'chat-msg-user', 'chat-msg-assistant', 'chat-msg-error',
     'chat-msg-bubble', 'chat-msg-copy', 'chat-msg-dot',
+    'chat-msg-think',
     'chat-input-textarea', 'chat-send-btn',
     'chat-conv-item', 'chat-conv-item-active',
   ];

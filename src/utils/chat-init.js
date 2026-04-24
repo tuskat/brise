@@ -17,6 +17,23 @@ export async function initChatView() {
     initSidebarEvents();
     initThreadEvents();
     initManageEvents();
+    initThinkModalEvents();
     initialized = true;
   }
+}
+
+/**
+ * Wire think-modal close handlers.
+ */
+function initThinkModalEvents() {
+  const thinkModal = document.getElementById('think-modal');
+  const thinkModalClose = document.getElementById('think-modal-close');
+
+  thinkModalClose?.addEventListener('click', () => {
+    thinkModal?.classList.remove('js-open');
+  });
+
+  thinkModal?.addEventListener('click', (e) => {
+    if (e.target === thinkModal) thinkModal.classList.remove('js-open');
+  });
 }

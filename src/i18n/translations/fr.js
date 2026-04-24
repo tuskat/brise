@@ -70,6 +70,8 @@ export default {
   'chat.deleteConfirm': 'Êtes-vous sûr de vouloir supprimer cette conversation ?',
   'chat.editTitle': 'Modifier le titre',
   'chat.toggleConfig': 'Basculer le panneau de config',
+  'chat.thinkTitle': 'Pensées IA',
+  'chat.thinkTooltip': 'Voir le processus de réflexion',
 
   // ── Playground ──
   'pg.title': 'Playground',

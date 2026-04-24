@@ -159,6 +159,10 @@ describe('chat-dom.js — message HTML class strings', () => {
     expect(js).toContain('icon-btn');
   });
 
+  it('think button uses icon-btn chat-msg-think', () => {
+    expect(js).toContain('chat-msg-think');
+  });
+
   it('conversation list item uses chat-conv-item', () => {
     expect(js).toContain('chat-conv-item');
   });
@@ -286,7 +290,7 @@ describe('JS class strings have matching CSS rules', () => {
     'stat-value',
     // Chat
     'chat-msg', 'chat-msg-bubble', 'chat-msg-copy', 'chat-conv-item',
-    'chat-msg-user', 'chat-msg-assistant', 'chat-msg-error',
+    'chat-msg-user', 'chat-msg-assistant', 'chat-msg-error', 'chat-msg-think',
     // Activity
     'activity-item', 'activity-success', 'activity-error',
     'activity-status', 'activity-time', 'activity-persona', 'activity-latency',

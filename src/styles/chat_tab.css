@@ -185,6 +185,17 @@
   color: var(--text-primary);
 }
 
+.chat-msg-think {
+  color: var(--accent);
+  opacity: 0.7;
+}
+
+.chat-msg-think:hover {
+  opacity: 1;
+  background: var(--accent-muted);
+  color: var(--accent);
+}
+
 /* Loading dots for streaming */
 .js-chat-msg-loading .chat-msg-bubble {
   display: flex;
