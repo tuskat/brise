@@ -17,9 +17,9 @@ A self-hosted AI observability platform for proxying and orchestrating multiple 
 
 ## Screenshots
 
-| Dashboard | Chat |
-|-----------|------|
-| ![Dashboard](screenshots/dashboard.png) | ![Chat](screenshots/chat.png) |
+| Dashboard | Chat | Chat thoughts |
+|-----------|------|------|
+| ![Dashboard](screenshots/dashboard.png) | ![Chat](screenshots/chat.png) | ![Chat](screenshots/chat-thoughts.png) |
 
 | Playground | Playground Results |
 |------------|-------------------|
