@@ -49,7 +49,10 @@ export async function createConversation({ persona_id, proxy_id }) {
  * DELETE /api/chat/:id — delete a conversation.
  */
 export async function deleteConversation(id) {
-  const res = await fetch('/api/chat/' + id, { method: 'DELETE' });
+  const res = await fetch('/api/chat/' + id, {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json' }
+  });
   const result = await res.json();
   if (!res.ok || result.status !== 'success') {
     throw new Error(result.error || 'Delete failed');
