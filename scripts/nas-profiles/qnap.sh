@@ -1,0 +1,6 @@
+NAS_LABEL="QNAP NAS (QTS)"
+DOCKER_SEARCH_PATHS="/usr/local/bin /usr/bin /share/CACHEDEV1_DATA/.qpkg/container-station/usr/bin /share/ZFS530_DATA/.qpkg/container-station/usr/bin"
+STORAGE_SEARCH_PATHS="/share/Container /share/CACHEDEV1_DATA/Container /share/Public"
+DEFAULT_DEPLOY_SUBPATH="brise"
+ENABLE_SSH_HINT="QTS → Control Panel → Network & File Services → Telnet/SSH → Allow SSH"
+INSTALL_DOCKER_HINT="QTS → App Center → install 'Container Station'"

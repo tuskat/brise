@@ -1,0 +1,6 @@
+NAS_LABEL="Synology NAS (DSM)"
+DOCKER_SEARCH_PATHS="/usr/local/bin /usr/bin /volume1/@appstore/ContainerManager/usr/bin /volume1/@appstore/Docker/usr/bin"
+STORAGE_SEARCH_PATHS="/volume1 /volume2 /volume3 /volume4"
+DEFAULT_DEPLOY_SUBPATH="docker/brise"
+ENABLE_SSH_HINT="DSM → Control Panel → Terminal & SNMP → Enable SSH service"
+INSTALL_DOCKER_HINT="DSM → Package Center → install 'Container Manager' (DSM 7.2+) or 'Docker'"

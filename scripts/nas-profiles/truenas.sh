@@ -1,0 +1,6 @@
+NAS_LABEL="TrueNAS SCALE"
+DOCKER_SEARCH_PATHS="/usr/bin /usr/local/bin"
+STORAGE_SEARCH_PATHS="/mnt"
+DEFAULT_DEPLOY_SUBPATH="apps/brise"
+ENABLE_SSH_HINT="TrueNAS UI → System Settings → Services → enable SSH (and allow password/keys)"
+INSTALL_DOCKER_HINT="TrueNAS SCALE 24.10+ ships Docker. For older versions you may need a sandbox/jail with docker installed."

@@ -1,0 +1,6 @@
+NAS_LABEL="Ugreen NAS (UGOS Pro)"
+DOCKER_SEARCH_PATHS="/usr/bin /usr/local/bin /opt/bin"
+STORAGE_SEARCH_PATHS="/volume1 /volume2"
+DEFAULT_DEPLOY_SUBPATH="docker/brise"
+ENABLE_SSH_HINT="UGOS Pro → Control Panel → Terminal & SNMP → Enable SSH"
+INSTALL_DOCKER_HINT="UGOS Pro → App Center → search 'Docker' → Install"

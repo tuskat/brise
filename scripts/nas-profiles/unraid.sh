@@ -1,0 +1,6 @@
+NAS_LABEL="Unraid"
+DOCKER_SEARCH_PATHS="/usr/bin /usr/local/bin /usr/local/sbin"
+STORAGE_SEARCH_PATHS="/mnt/user/appdata /mnt/cache/appdata"
+DEFAULT_DEPLOY_SUBPATH="brise"
+ENABLE_SSH_HINT="Unraid WebGUI → Settings → Management Access → enable SSH (use root or a configured user)"
+INSTALL_DOCKER_HINT="Docker is built in. Settings → Docker → Enable Docker"

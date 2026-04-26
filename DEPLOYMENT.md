@@ -64,27 +64,47 @@ docker run -d \
 
 ## NAS Deployment
 
-### Synology NAS
+Brise ships with a generic NAS deploy script that builds the image locally on
+your Mac, ships it to the NAS over SSH, and starts the container. No git or
+Node.js is required on the NAS — only Docker.
 
-1. Install Docker via Package Center
-2. Open Docker app → Registry → Search for image
-3. Create container with:
-   - Port: 4321
-   - Volumes: Map host folders to container paths
-4. Set restart policy to "Always"
+### One-shot deploy / update
 
-### QNAP NAS
+```bash
+NAS_TYPE=ugreen DEPLOY_HOST=192.168.1.50 ./scripts/deploy-nas.sh
+```
 
-1. Install Container Station
-2. Create container from `docker-compose.yml`
-3. Map volumes to NAS storage
+Supported `NAS_TYPE` values: `ugreen`, `synology`, `qnap`, `unraid`, `truenas`.
+Each is just a small profile in `scripts/nas-profiles/` that lists where Docker
+and the storage volumes live on that NAS — adding a new one is a single file.
 
-### Unraid
+For routine updates, edit `scripts/update.sh` once with your `NAS_TYPE` and
+`DEPLOY_HOST`, then just run:
 
-1. Go to Docker tab
-2. Add Container
-3. Use template or manual configuration
-4. Map app config directories
+```bash
+./scripts/update.sh
+```
+
+### Per-NAS prerequisites
+
+| NAS | Enable SSH | Install Docker |
+|-----|-----------|----------------|
+| Ugreen (UGOS Pro) | Control Panel → Terminal & SNMP | App Center → Docker |
+| Synology (DSM 7.2+) | Control Panel → Terminal & SNMP | Package Center → Container Manager |
+| QNAP (QTS) | Control Panel → Network & File Services → Telnet/SSH | App Center → Container Station |
+| Unraid | Settings → Management Access → SSH | Built in (Settings → Docker) |
+| TrueNAS SCALE | System Settings → Services → SSH | Built in (24.10+) |
+
+### Environment variables
+
+| Variable | Required | Description |
+|----------|----------|-------------|
+| `NAS_TYPE` | yes | one of the values above |
+| `DEPLOY_HOST` | yes | NAS IP or hostname |
+| `DEPLOY_USER` | no | SSH user (default: `$USER`) |
+| `DEPLOY_PATH` | no | remote project path (auto-discovered from profile) |
+| `SKIP_TEST` | no | skip local vitest run |
+| `ASSUME_YES` | no | skip wipe-confirmation prompt |
 
 ## Production Considerations
 
@@ -127,13 +147,15 @@ tar -xzf brise-backup.tar.gz
 
 ### Updating
 
-```bash
-# Pull latest changes
-git pull
+For local Docker installs:
 
-# Rebuild and restart
+```bash
+git pull
 docker-compose up -d --build
 ```
+
+For NAS installs, see [NAS Deployment](#nas-deployment) above — `./scripts/update.sh`
+handles the full pull → rebuild → ship → restart cycle from your dev machine.
 
 ## Troubleshooting
 
