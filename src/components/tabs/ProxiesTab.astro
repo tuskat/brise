@@ -4,11 +4,13 @@
       <h2 class="t-hero" data-i18n="proxies.title"></h2>
       <p class="t-subtitle" data-i18n="proxies.subtitle"></p>
     </div>
-    <button
-      id="new-proxy-btn"
-      class="btn btn-primary"
-      data-i18n="proxies.addProxy"></button>
+    <div class="flex-row gap-sm flex-wrap">
+      <button id="export-proxies-btn" class="btn btn-secondary" data-i18n="proxies.export"></button>
+      <button id="import-proxies-btn" class="btn btn-secondary" data-i18n="proxies.import"></button>
+      <button id="new-proxy-btn" class="btn btn-primary" data-i18n="proxies.addProxy"></button>
+    </div>
   </div>
+  <input id="import-proxies-file" type="file" accept="application/json,.json" hidden />
 
   <div id="proxies-list" class="flex-col gap-md mt-lg">
     <p class="placeholder" data-i18n="proxies.loading"></p>
@@ -113,6 +115,29 @@
             data-i18n="general.cancel"></button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- Proxy import modal -->
+  <div id="proxy-import-modal" class="modal">
+    <div class="modal-card modal-card-sm">
+      <div class="row-between mb-md">
+        <h2 class="t-section-title" data-i18n="proxies.import.title"></h2>
+        <button id="proxy-import-close" class="modal-close" data-i18n-aria="general.close">&times;</button>
+      </div>
+      <p class="t-body c-secondary mb-md" id="proxy-import-filename"></p>
+      <div class="flex-col gap-xs mb-md">
+        <label for="proxy-import-mode" class="label" data-i18n="proxies.import.mode"></label>
+        <select id="proxy-import-mode" class="input input-select">
+          <option value="skip" data-i18n="proxies.import.modeSkip"></option>
+          <option value="overwrite" data-i18n="proxies.import.modeOverwrite"></option>
+          <option value="rename" data-i18n="proxies.import.modeRename"></option>
+        </select>
+      </div>
+      <div class="flex-row gap-sm self-end mt-sm flex-wrap">
+        <button id="proxy-import-confirm" class="btn btn-primary" data-i18n="proxies.import.confirmBtn"></button>
+        <button id="proxy-import-cancel" class="btn btn-secondary" data-i18n="general.cancel"></button>
+      </div>
     </div>
   </div>
 

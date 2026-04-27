@@ -47,8 +47,19 @@ function getRefs() {
     urlHint:             document.getElementById('px-url-hint'),
     vaultEntrySelect:    document.getElementById('px-vault-entry'),
     vaultHint:           document.getElementById('px-vault-hint'),
+    exportBtn:           document.getElementById('export-proxies-btn'),
+    importBtn:           document.getElementById('import-proxies-btn'),
+    importFile:          document.getElementById('import-proxies-file'),
+    importModal:         document.getElementById('proxy-import-modal'),
+    importMode:          document.getElementById('proxy-import-mode'),
+    importFilename:      document.getElementById('proxy-import-filename'),
+    importConfirm:       document.getElementById('proxy-import-confirm'),
+    importCancel:        document.getElementById('proxy-import-cancel'),
+    importClose:         document.getElementById('proxy-import-close'),
   };
 }
+
+let pendingProxyImport = null;
 
 // ═══════════════════════════════════════════════════════════
 // VAULT PICKER
@@ -393,12 +404,84 @@ async function handleProxyDelete() {
 // EVENT WIRING
 // ═══════════════════════════════════════════════════════════
 
+function handleProxyExport() {
+  window.location.href = '/api/proxies/export';
+}
+
+function handleProxyImportClick() {
+  getRefs().importFile?.click();
+}
+
+async function handleProxyImportFile(e) {
+  const file = e.target.files?.[0];
+  if (!file) return;
+  try {
+    const text = await file.text();
+    const bundle = JSON.parse(text);
+    if (bundle.kind !== 'brise.proxies' || !Array.isArray(bundle.proxies)) {
+      throw new Error(t('proxies.import.invalidBundle'));
+    }
+    pendingProxyImport = bundle;
+    const refs = getRefs();
+    if (refs.importFilename) {
+      refs.importFilename.textContent = t('proxies.import.fileSummary', { name: file.name, count: String(bundle.proxies.length) });
+    }
+    refs.importModal?.classList.add('js-open');
+  } catch (err) {
+    showToast()?.({ message: err.message, variant: 'error' });
+  } finally {
+    e.target.value = '';
+  }
+}
+
+async function handleProxyImportConfirm() {
+  if (!pendingProxyImport) return;
+  const refs = getRefs();
+  const mode = refs.importMode?.value || 'skip';
+  try {
+    const r = await fetch('/api/proxies/import', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ bundle: pendingProxyImport, mode }),
+    });
+    const result = await r.json();
+    if (!r.ok) throw new Error(result.error || t('proxies.import.failed'));
+
+    let msg = t('proxies.import.success', {
+      imported: String(result.imported),
+      skipped: String(result.skipped),
+      overwritten: String(result.overwritten),
+      renamed: String(result.renamed),
+    });
+    if (result.danglingRefs > 0) {
+      msg += ' ' + t('proxies.import.dangling', { count: String(result.danglingRefs) });
+    }
+    showToast()?.({ message: msg, variant: 'success' });
+    refs.importModal?.classList.remove('js-open');
+    pendingProxyImport = null;
+    loadProxiesList();
+    if (window.loadChatDropdowns) window.loadChatDropdowns();
+  } catch (err) {
+    showToast()?.({ message: err.message, variant: 'error' });
+  }
+}
+
 export function initProxiesEvents() {
   const refs = getRefs();
 
   refs.newProxyBtn?.addEventListener('click', openNewProxyModal);
   refs.proxyForm?.addEventListener('submit', handleProxyFormSubmit);
   refs.confirmProxyDeleteBtn?.addEventListener('click', handleProxyDelete);
+
+  refs.exportBtn?.addEventListener('click', handleProxyExport);
+  refs.importBtn?.addEventListener('click', handleProxyImportClick);
+  refs.importFile?.addEventListener('change', handleProxyImportFile);
+  refs.importConfirm?.addEventListener('click', handleProxyImportConfirm);
+  refs.importCancel?.addEventListener('click', () => refs.importModal?.classList.remove('js-open'));
+  refs.importClose?.addEventListener('click', () => refs.importModal?.classList.remove('js-open'));
+  refs.importModal?.addEventListener('click', (e) => {
+    if (e.target === refs.importModal) refs.importModal.classList.remove('js-open');
+  });
 
   // Re-filter vault picker when api_schema changes
   refs.apiSchemaSelect?.addEventListener('change', () => {

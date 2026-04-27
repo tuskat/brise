@@ -49,8 +49,21 @@ function getRefs() {
     deleteText:     document.getElementById('vault-delete-text'),
     deleteConfirm:  document.getElementById('vault-delete-confirm'),
     deleteCancel:   document.getElementById('vault-delete-cancel'),
+    exportBtn:      document.getElementById('vault-export-btn'),
+    importBtn:      document.getElementById('vault-import-btn'),
+    importFile:     document.getElementById('vault-import-file'),
+    importModal:    document.getElementById('vault-import-modal'),
+    importMode:     document.getElementById('vault-import-mode'),
+    importPass:     document.getElementById('vault-import-pass'),
+    importFilename: document.getElementById('vault-import-filename'),
+    importReplaceWarn: document.getElementById('vault-import-replace-warn'),
+    importConfirm:  document.getElementById('vault-import-confirm'),
+    importCancel:   document.getElementById('vault-import-cancel'),
+    importClose:    document.getElementById('vault-import-close'),
   };
 }
+
+let pendingVaultBundle = null;
 
 // ═══════════════════════════════════════════════════════════
 // TOKEN + FETCH
@@ -80,6 +93,7 @@ function showState(which) {
   refs.lockBtn?.classList.toggle('js-hidden', which !== 'unlocked');
   refs.rotateBtn?.classList.toggle('js-hidden', which !== 'unlocked');
   refs.newBtn?.classList.toggle('js-hidden', which !== 'unlocked');
+  refs.exportBtn?.classList.toggle('js-hidden', which !== 'unlocked');
 }
 
 export async function refreshVaultView() {
@@ -352,6 +366,106 @@ async function handleDelete() {
 }
 
 // ═══════════════════════════════════════════════════════════
+// EXPORT / IMPORT
+// ═══════════════════════════════════════════════════════════
+
+async function handleExport() {
+  const tok = getToken();
+  if (!tok) return;
+  // Use fetch + Blob so we can attach the auth header (location.href can't).
+  try {
+    const r = await vaultFetch('/api/vault/export');
+    if (r.status === 401) { clearToken(); return showState('locked'); }
+    if (!r.ok) {
+      const data = await r.json().catch(() => ({}));
+      throw new Error(data.error || 'Export failed');
+    }
+    const blob = await r.blob();
+    const cd = r.headers.get('Content-Disposition') || '';
+    const m = cd.match(/filename="?([^"]+)"?/i);
+    const name = m?.[1] || `brise-vault-${new Date().toISOString().slice(0,10)}.json`;
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = name;
+    document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
+  } catch (err) {
+    showToast()?.({ message: err.message, variant: 'error' });
+  }
+}
+
+function handleImportClick() {
+  getRefs().importFile?.click();
+}
+
+async function handleImportFile(e) {
+  const file = e.target.files?.[0];
+  if (!file) return;
+  try {
+    const text = await file.text();
+    const bundle = JSON.parse(text);
+    if (bundle.kind !== 'brise.vault' || !Array.isArray(bundle.entries)) {
+      throw new Error(t('vault.import.invalidBundle'));
+    }
+    pendingVaultBundle = bundle;
+    const refs = getRefs();
+    if (refs.importFilename) {
+      refs.importFilename.textContent = t('vault.import.fileSummary', { name: file.name, count: String(bundle.entries.length) });
+    }
+    refs.importModal?.classList.add('js-open');
+    updateImportWarn();
+  } catch (err) {
+    showToast()?.({ message: err.message, variant: 'error' });
+  } finally {
+    e.target.value = '';
+  }
+}
+
+function updateImportWarn() {
+  const refs = getRefs();
+  const replace = refs.importMode?.value === 'replace';
+  refs.importReplaceWarn?.classList.toggle('js-hidden', !replace);
+}
+
+async function handleImportConfirm() {
+  if (!pendingVaultBundle) return;
+  const refs = getRefs();
+  const mode = refs.importMode?.value || 'merge';
+  const passphrase = refs.importPass?.value ?? '';
+  if (!passphrase) {
+    showToast()?.({ message: t('vault.import.passphraseRequired'), variant: 'warning' });
+    return;
+  }
+  try {
+    const body = { bundle: pendingVaultBundle, mode, passphrase };
+    if (mode === 'replace') body.confirmReplace = true;
+    const r = await fetch('/api/vault/import', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.error || t('vault.import.failed'));
+
+    if (data.token) setToken(data.token);
+    refs.importModal?.classList.remove('js-open');
+    refs.importPass.value = '';
+    pendingVaultBundle = null;
+    showToast()?.({
+      message: t('vault.import.success', {
+        imported: String(data.imported),
+        skipped: String(data.skipped ?? 0),
+        mode,
+      }),
+      variant: 'success',
+    });
+    await refreshVaultView();
+  } catch (err) {
+    showToast()?.({ message: err.message, variant: 'error' });
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
 // EVENTS
 // ═══════════════════════════════════════════════════════════
 
@@ -381,5 +495,16 @@ export function initVaultEvents() {
   refs.deleteCancel?.addEventListener('click', () => refs.deleteModal?.classList.remove('js-open'));
   refs.deleteModal?.addEventListener('click', (e) => {
     if (e.target === refs.deleteModal) refs.deleteModal.classList.remove('js-open');
+  });
+
+  refs.exportBtn?.addEventListener('click', handleExport);
+  refs.importBtn?.addEventListener('click', handleImportClick);
+  refs.importFile?.addEventListener('change', handleImportFile);
+  refs.importMode?.addEventListener('change', updateImportWarn);
+  refs.importConfirm?.addEventListener('click', handleImportConfirm);
+  refs.importCancel?.addEventListener('click', () => refs.importModal?.classList.remove('js-open'));
+  refs.importClose?.addEventListener('click', () => refs.importModal?.classList.remove('js-open'));
+  refs.importModal?.addEventListener('click', (e) => {
+    if (e.target === refs.importModal) refs.importModal.classList.remove('js-open');
   });
 }

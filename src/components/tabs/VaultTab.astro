@@ -5,11 +5,14 @@
       <p class="t-subtitle" data-i18n="vault.subtitle"></p>
     </div>
     <div class="flex-row gap-sm flex-wrap" id="vault-header-actions">
+      <button id="vault-export-btn" class="btn btn-secondary js-hidden" data-i18n="vault.export"></button>
+      <button id="vault-import-btn" class="btn btn-secondary" data-i18n="vault.import"></button>
       <button id="vault-lock-btn" class="btn btn-secondary js-hidden" data-i18n="vault.lock"></button>
       <button id="vault-rotate-btn" class="btn btn-secondary js-hidden" data-i18n="vault.rotate"></button>
       <button id="vault-new-btn" class="btn btn-primary js-hidden" data-i18n="vault.newEntry"></button>
     </div>
   </div>
+  <input id="vault-import-file" type="file" accept="application/json,.json" hidden />
 
   <!-- State: uninitialized -->
   <div id="vault-uninit" class="card mt-lg js-hidden">
@@ -109,6 +112,35 @@
         <button type="button" class="btn btn-secondary" id="vault-rotate-cancel" data-i18n="general.cancel"></button>
       </div>
     </form>
+  </div>
+</div>
+
+<!-- Vault import modal -->
+<div id="vault-import-modal" class="modal">
+  <div class="modal-card modal-card-sm">
+    <div class="row-between mb-md">
+      <h2 class="t-section-title" data-i18n="vault.import.title"></h2>
+      <button id="vault-import-close" class="modal-close" data-i18n-aria="general.close">&times;</button>
+    </div>
+    <p class="t-body c-secondary mb-sm" id="vault-import-filename"></p>
+    <p class="t-caption c-tertiary mb-md" data-i18n="vault.import.intro"></p>
+    <div class="flex-col gap-xs mb-md">
+      <label for="vault-import-mode" class="label" data-i18n="vault.import.mode"></label>
+      <select id="vault-import-mode" class="input input-select">
+        <option value="merge" data-i18n="vault.import.modeMerge"></option>
+        <option value="replace" data-i18n="vault.import.modeReplace"></option>
+      </select>
+    </div>
+    <div class="flex-col gap-xs mb-md">
+      <label for="vault-import-pass" class="label" data-i18n="vault.import.passphrase"></label>
+      <input id="vault-import-pass" type="password" class="input" autocomplete="current-password" />
+      <span class="t-caption c-tertiary" data-i18n="vault.import.passphraseHint"></span>
+    </div>
+    <p class="t-caption c-warning mb-md js-hidden" id="vault-import-replace-warn" data-i18n="vault.import.replaceWarn"></p>
+    <div class="flex-row gap-sm self-end mt-sm flex-wrap">
+      <button id="vault-import-confirm" class="btn btn-primary" data-i18n="vault.import.confirmBtn"></button>
+      <button id="vault-import-cancel" class="btn btn-secondary" data-i18n="general.cancel"></button>
+    </div>
   </div>
 </div>
 
