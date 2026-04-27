@@ -162,6 +162,18 @@ export default {
   'personas.delete.confirm': 'Êtes-vous sûr de vouloir supprimer {name} ? Cette action est irréversible.',
   'personas.delete.failed': 'Échec de la suppression du persona',
   'personas.delete.success': 'Persona supprimé',
+  'personas.export': '↓ Exporter',
+  'personas.import': '↑ Importer',
+  'personas.import.title': 'Importer des personas',
+  'personas.import.fileSummary': '{name} — {count} personas',
+  'personas.import.mode': 'En cas de conflit',
+  'personas.import.modeSkip': 'Ignorer les existants',
+  'personas.import.modeOverwrite': 'Écraser les existants',
+  'personas.import.modeRename': 'Renommer les importés (ex. id-2)',
+  'personas.import.confirmBtn': 'Importer',
+  'personas.import.invalidBundle': 'Bundle de personas Brise invalide',
+  'personas.import.failed': 'Échec de l\'importation',
+  'personas.import.success': '{imported} importés (ignorés {skipped}, écrasés {overwritten}, renommés {renamed})',
 
   // ── Proxies ──
   'proxies.title': 'Proxys',

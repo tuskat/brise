@@ -162,6 +162,18 @@ export default {
   'personas.delete.confirm': 'Are you sure you want to delete {name}? This cannot be undone.',
   'personas.delete.failed': 'Failed to delete persona',
   'personas.delete.success': 'Persona deleted',
+  'personas.export': '↓ Export',
+  'personas.import': '↑ Import',
+  'personas.import.title': 'Import personas',
+  'personas.import.fileSummary': '{name} — {count} personas',
+  'personas.import.mode': 'On conflict',
+  'personas.import.modeSkip': 'Skip existing',
+  'personas.import.modeOverwrite': 'Overwrite existing',
+  'personas.import.modeRename': 'Rename imported (e.g. id-2)',
+  'personas.import.confirmBtn': 'Import',
+  'personas.import.invalidBundle': 'Not a valid Brise personas bundle',
+  'personas.import.failed': 'Import failed',
+  'personas.import.success': 'Imported {imported} (skipped {skipped}, overwritten {overwritten}, renamed {renamed})',
 
   // ── Proxies ──
   'proxies.title': 'Proxy Backends',

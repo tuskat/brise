@@ -37,8 +37,19 @@ function getRefs() {
     deletePersonaName:   document.getElementById('delete-persona-name'),
     confirmPersonaDeleteBtn: document.getElementById('confirm-delete-btn'),
     cancelPersonaDeleteBtn:  document.getElementById('cancel-delete-btn'),
+    exportBtn:           document.getElementById('export-personas-btn'),
+    importBtn:           document.getElementById('import-personas-btn'),
+    importFile:          document.getElementById('import-personas-file'),
+    importModal:         document.getElementById('persona-import-modal'),
+    importModeSelect:    document.getElementById('persona-import-mode'),
+    importFilename:      document.getElementById('persona-import-filename'),
+    importConfirm:       document.getElementById('persona-import-confirm'),
+    importCancel:        document.getElementById('persona-import-cancel'),
+    importClose:         document.getElementById('persona-import-close'),
   };
 }
+
+let pendingImportBundle = null;
 
 // ═══════════════════════════════════════════════════════════
 // LIST RENDERING
@@ -236,12 +247,93 @@ async function handlePersonaDelete() {
 // EVENT WIRING
 // ═══════════════════════════════════════════════════════════
 
+function handleExport() {
+  window.location.href = '/api/personas/export';
+}
+
+function handleImportClick() {
+  const { importFile } = getRefs();
+  importFile?.click();
+}
+
+async function handleImportFileSelected(e) {
+  const file = e.target.files?.[0];
+  if (!file) return;
+
+  try {
+    const text = await file.text();
+    const bundle = JSON.parse(text);
+    if (bundle.kind !== 'brise.personas' || !Array.isArray(bundle.personas)) {
+      throw new Error(t('personas.import.invalidBundle'));
+    }
+    pendingImportBundle = bundle;
+    const refs = getRefs();
+    if (refs.importFilename) {
+      refs.importFilename.textContent = t('personas.import.fileSummary', {
+        name: file.name,
+        count: String(bundle.personas.length),
+      });
+    }
+    refs.importModal?.classList.add('js-open');
+  } catch (err) {
+    showToast()?.({ message: err.message, variant: 'error' });
+  } finally {
+    // reset so re-selecting same file fires change event
+    e.target.value = '';
+  }
+}
+
+async function handleImportConfirm() {
+  if (!pendingImportBundle) return;
+  const refs = getRefs();
+  const mode = refs.importModeSelect?.value || 'skip';
+
+  try {
+    const response = await fetch('/api/personas/import', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ bundle: pendingImportBundle, mode }),
+    });
+    const result = await response.json();
+
+    if (!response.ok) {
+      showToast()?.({ message: result.error || t('personas.import.failed'), variant: 'error' });
+      return;
+    }
+
+    showToast()?.({
+      message: t('personas.import.success', {
+        imported: String(result.imported),
+        skipped: String(result.skipped),
+        overwritten: String(result.overwritten),
+        renamed: String(result.renamed),
+      }),
+      variant: 'success',
+    });
+    refs.importModal?.classList.remove('js-open');
+    pendingImportBundle = null;
+    loadPersonasList();
+    if (window.loadChatDropdowns) window.loadChatDropdowns();
+  } catch (err) {
+    showToast()?.({ message: err.message, variant: 'error' });
+  }
+}
+
 export function initPersonasEvents() {
   const refs = getRefs();
 
   refs.newPersonaBtn?.addEventListener('click', openNewPersonaModal);
   refs.personaForm?.addEventListener('submit', handlePersonaFormSubmit);
   refs.confirmPersonaDeleteBtn?.addEventListener('click', handlePersonaDelete);
+  refs.exportBtn?.addEventListener('click', handleExport);
+  refs.importBtn?.addEventListener('click', handleImportClick);
+  refs.importFile?.addEventListener('change', handleImportFileSelected);
+  refs.importConfirm?.addEventListener('click', handleImportConfirm);
+  refs.importCancel?.addEventListener('click', () => refs.importModal?.classList.remove('js-open'));
+  refs.importClose?.addEventListener('click', () => refs.importModal?.classList.remove('js-open'));
+  refs.importModal?.addEventListener('click', (e) => {
+    if (e.target === refs.importModal) refs.importModal.classList.remove('js-open');
+  });
 
   // Modal close buttons
   refs.personaFormClose?.addEventListener('click', () => refs.personaFormModal?.classList.remove('js-open'));
