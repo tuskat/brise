@@ -1,226 +1,103 @@
 import { loadAllProxies, saveProxy, deleteProxy } from '../../lib/proxy-loader.js';
-import { testProxyConnection } from '../../lib/proxy-client.js';
 
-/**
- * GET /api/proxies - List all proxies
- */
+const json = (body, status = 200) =>
+  new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } });
+
+function publicProxy(p) {
+  // Never expose any secret material — the api_key column is a legacy field
+  // that gets migrated into the vault on first vault unlock.
+  const { api_key, ...rest } = p;
+  return rest;
+}
+
+/** GET /api/proxies */
 export async function GET() {
   try {
     const proxies = await loadAllProxies();
-    
-    // Mask API keys in response
-    const sanitized = proxies.map(p => ({
-      ...p,
-      api_key: p.api_key ? '********' : null
-    }));
-    
-    return new Response(JSON.stringify(sanitized), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' }
-    });
+    return json(proxies.map(publicProxy));
   } catch (error) {
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' }
-    });
+    return json({ error: error.message }, 500);
   }
 }
 
-/**
- * POST /api/proxies - Create new proxy
- */
+/** POST /api/proxies */
 export async function POST({ request }) {
   try {
     const body = await request.json();
-    const { name, url, model, is_local_network, api_key, api_schema } = body;
-    
-    // Validation
+    const { name, url, model, is_local_network, vault_entry_id, api_schema } = body;
+
     if (!name || !url || !model) {
-      return new Response(JSON.stringify({ 
-        error: 'Name, URL, and Model are required' 
-      }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' }
-      });
+      return json({ error: 'Name, URL, and Model are required' }, 400);
     }
-    
-    // Generate ID from name
-    const id = name
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-|-$/g, '');
-    
-    if (!id) {
-      return new Response(JSON.stringify({ 
-        error: 'Invalid name - must contain alphanumeric characters' 
-      }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' }
-      });
-    }
-    
-    // Check for duplicate ID
+
+    const id = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    if (!id) return json({ error: 'Invalid name - must contain alphanumeric characters' }, 400);
+
     const existing = await loadAllProxies();
     if (existing.find(p => p.id === id)) {
-      return new Response(JSON.stringify({ 
-        error: `Proxy with ID '${id}' already exists` 
-      }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' }
-      });
+      return json({ error: `Proxy with ID '${id}' already exists` }, 400);
     }
-    
-    // Validate URL format
-    try {
-      new URL(url);
-    } catch {
-      return new Response(JSON.stringify({ 
-        error: 'Invalid URL format' 
-      }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' }
-      });
-    }
-    
+
+    try { new URL(url); } catch { return json({ error: 'Invalid URL format' }, 400); }
+
     const proxy = {
-      id,
-      name,
-      url,
-      model,
+      id, name, url, model,
       is_local_network: is_local_network ?? true,
-      api_key: is_local_network ? null : (api_key || null),
-      api_schema: api_schema === 'openai' ? 'openai' : 'ollama'
+      api_key: null,
+      vault_entry_id: is_local_network ? null : (vault_entry_id || null),
+      api_schema: api_schema === 'openai' ? 'openai' : 'ollama',
     };
-    
+
     await saveProxy(proxy);
-    
-    return new Response(JSON.stringify({ 
-      status: 'success', 
-      data: { ...proxy, api_key: proxy.api_key ? '********' : null }
-    }), {
-      status: 201,
-      headers: { 'Content-Type': 'application/json' }
-    });
+    return json({ status: 'success', data: publicProxy(proxy) }, 201);
   } catch (error) {
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' }
-    });
+    return json({ error: error.message }, 500);
   }
 }
 
-/**
- * PUT /api/proxies - Update existing proxy
- */
+/** PUT /api/proxies */
 export async function PUT({ request }) {
   try {
     const body = await request.json();
-    const { id, name, url, model, is_local_network, api_key, api_schema } = body;
-    
-    if (!id) {
-      return new Response(JSON.stringify({ 
-        error: 'Proxy ID is required' 
-      }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' }
-      });
-    }
-    
-    // Check proxy exists
+    const { id, name, url, model, is_local_network, vault_entry_id, api_schema } = body;
+
+    if (!id) return json({ error: 'Proxy ID is required' }, 400);
+
     const existing = await loadAllProxies();
     const proxy = existing.find(p => p.id === id);
-    
-    if (!proxy) {
-      return new Response(JSON.stringify({ 
-        error: `Proxy '${id}' not found` 
-      }), {
-        status: 404,
-        headers: { 'Content-Type': 'application/json' }
-      });
-    }
-    
-    // Validate URL if provided
+    if (!proxy) return json({ error: `Proxy '${id}' not found` }, 404);
+
     if (url) {
-      try {
-        new URL(url);
-      } catch {
-        return new Response(JSON.stringify({ 
-          error: 'Invalid URL format' 
-        }), {
-          status: 400,
-          headers: { 'Content-Type': 'application/json' }
-        });
-      }
+      try { new URL(url); } catch { return json({ error: 'Invalid URL format' }, 400); }
     }
-    
-    // Update fields — never accept the masked placeholder as a real api_key
-    const isMaskedKey = api_key && /^[*]+$/.test(api_key);
+
     const updated = {
       ...proxy,
       name: name ?? proxy.name,
       url: url ?? proxy.url,
       model: model ?? proxy.model,
       is_local_network: is_local_network ?? proxy.is_local_network,
-      api_key: is_local_network === true ? null : (isMaskedKey ? proxy.api_key : (api_key ?? proxy.api_key)),
-      api_schema: (api_schema === 'openai' || api_schema === 'ollama') ? api_schema : (proxy.api_schema || 'ollama')
+      api_key: is_local_network === true ? null : proxy.api_key,
+      vault_entry_id: is_local_network === true ? null : (vault_entry_id !== undefined ? (vault_entry_id || null) : proxy.vault_entry_id),
+      api_schema: (api_schema === 'openai' || api_schema === 'ollama') ? api_schema : (proxy.api_schema || 'ollama'),
     };
-    
+
     await saveProxy(updated);
-    
-    return new Response(JSON.stringify({ 
-      status: 'success', 
-      data: { ...updated, api_key: updated.api_key ? '********' : null }
-    }), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' }
-    });
+    return json({ status: 'success', data: publicProxy(updated) });
   } catch (error) {
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' }
-    });
+    return json({ error: error.message }, 500);
   }
 }
 
-/**
- * DELETE /api/proxies - Delete a proxy
- */
+/** DELETE /api/proxies */
 export async function DELETE({ request }) {
   try {
-    const body = await request.json();
-    const { id } = body;
-    
-    if (!id) {
-      return new Response(JSON.stringify({ 
-        error: 'Proxy ID is required' 
-      }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' }
-      });
-    }
-    
-    const deleted = await deleteProxy(id);
-    
-    if (!deleted) {
-      return new Response(JSON.stringify({ 
-        error: `Proxy '${id}' not found` 
-      }), {
-        status: 404,
-        headers: { 'Content-Type': 'application/json' }
-      });
-    }
-    
-    return new Response(JSON.stringify({ 
-      status: 'success',
-      message: `Proxy '${id}' deleted`
-    }), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' }
-    });
+    const { id } = await request.json();
+    if (!id) return json({ error: 'Proxy ID is required' }, 400);
+    const ok = await deleteProxy(id);
+    if (!ok) return json({ error: `Proxy '${id}' not found` }, 404);
+    return json({ status: 'success', message: `Proxy '${id}' deleted` });
   } catch (error) {
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' }
-    });
+    return json({ error: error.message }, 500);
   }
 }

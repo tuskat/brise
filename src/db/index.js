@@ -81,6 +81,30 @@ db.exec(`
     );
 `);
 
+// Migrate: proxies.vault_entry_id (links proxy to a vault entry instead of inline api_key)
+const proxyCols = db.prepare('PRAGMA table_info(proxies)').all();
+if (!proxyCols.find(c => c.name === 'vault_entry_id')) {
+    db.exec(`ALTER TABLE proxies ADD COLUMN vault_entry_id TEXT`);
+}
+
+// Vault — encrypted secret storage
+db.exec(`
+    CREATE TABLE IF NOT EXISTS vault_meta (
+        key TEXT PRIMARY KEY,
+        value TEXT NOT NULL
+    );
+    CREATE TABLE IF NOT EXISTS vault_entries (
+        id TEXT PRIMARY KEY,
+        label TEXT NOT NULL,
+        provider TEXT NOT NULL,
+        ciphertext TEXT NOT NULL,
+        preview TEXT,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        last_used_at DATETIME
+    );
+`);
+
 // Seed defaults on first boot (tables empty)
 const SEED_PERSONAS = [
     {
@@ -145,6 +169,7 @@ function rowToProxy(row) {
         model: row.model,
         is_local_network: !!row.is_local_network,
         api_key: row.api_key,
+        vault_entry_id: row.vault_entry_id || null,
         api_schema: row.api_schema || 'ollama',
         created_at: row.created_at,
         last_used: row.last_used,
@@ -201,23 +226,25 @@ export const proxyStore = {
         if (existing) {
             const merged = { ...existing, ...proxy };
             db.prepare(`
-                UPDATE proxies SET name = ?, url = ?, model = ?, is_local_network = ?, api_key = ?, api_schema = ?
+                UPDATE proxies SET name = ?, url = ?, model = ?, is_local_network = ?, api_key = ?, vault_entry_id = ?, api_schema = ?
                 WHERE id = ?
             `).run(
                 merged.name, merged.url, merged.model,
                 merged.is_local_network ? 1 : 0,
                 merged.api_key ?? null,
+                merged.vault_entry_id ?? null,
                 merged.api_schema || 'ollama',
                 proxy.id,
             );
         } else {
             db.prepare(`
-                INSERT INTO proxies (id, name, url, model, is_local_network, api_key, api_schema)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO proxies (id, name, url, model, is_local_network, api_key, vault_entry_id, api_schema)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             `).run(
                 proxy.id, proxy.name, proxy.url, proxy.model,
                 proxy.is_local_network ? 1 : 0,
                 proxy.api_key ?? null,
+                proxy.vault_entry_id ?? null,
                 proxy.api_schema || 'ollama',
             );
         }
@@ -228,6 +255,73 @@ export const proxyStore = {
     },
     touch(id) {
         db.prepare('UPDATE proxies SET last_used = CURRENT_TIMESTAMP WHERE id = ?').run(id);
+    },
+    listInlineKeyed() {
+        return db.prepare(`
+            SELECT * FROM proxies WHERE api_key IS NOT NULL AND api_key != '' AND vault_entry_id IS NULL
+        `).all().map(rowToProxy);
+    },
+    linkVaultEntry(id, vaultEntryId) {
+        db.prepare(`
+            UPDATE proxies SET vault_entry_id = ?, api_key = NULL WHERE id = ?
+        `).run(vaultEntryId, id);
+    },
+};
+
+export const vaultStore = {
+    getMeta(key) {
+        const row = db.prepare('SELECT value FROM vault_meta WHERE key = ?').get(key);
+        return row?.value ?? null;
+    },
+    setMeta(key, value) {
+        db.prepare(`
+            INSERT INTO vault_meta (key, value) VALUES (?, ?)
+            ON CONFLICT(key) DO UPDATE SET value = excluded.value
+        `).run(key, value);
+    },
+    listEntries() {
+        return db.prepare(`
+            SELECT id, label, provider, preview, created_at, updated_at, last_used_at
+            FROM vault_entries ORDER BY label COLLATE NOCASE
+        `).all();
+    },
+    getCiphertext(id) {
+        return db.prepare('SELECT id, label, provider, ciphertext, preview FROM vault_entries WHERE id = ?').get(id);
+    },
+    create({ id, label, provider, ciphertext, preview }) {
+        db.prepare(`
+            INSERT INTO vault_entries (id, label, provider, ciphertext, preview)
+            VALUES (?, ?, ?, ?, ?)
+        `).run(id, label, provider, ciphertext, preview);
+        return this.listEntries().find(e => e.id === id);
+    },
+    update(id, patch) {
+        const existing = db.prepare('SELECT * FROM vault_entries WHERE id = ?').get(id);
+        if (!existing) return null;
+        db.prepare(`
+            UPDATE vault_entries
+            SET label = ?, provider = ?, ciphertext = ?, preview = ?, updated_at = CURRENT_TIMESTAMP
+            WHERE id = ?
+        `).run(
+            patch.label ?? existing.label,
+            patch.provider ?? existing.provider,
+            patch.ciphertext ?? existing.ciphertext,
+            patch.preview ?? existing.preview,
+            id,
+        );
+        return this.listEntries().find(e => e.id === id);
+    },
+    delete(id) {
+        return db.prepare('DELETE FROM vault_entries WHERE id = ?').run(id).changes > 0;
+    },
+    touch(id) {
+        db.prepare('UPDATE vault_entries SET last_used_at = CURRENT_TIMESTAMP WHERE id = ?').run(id);
+    },
+    listAllForRotation() {
+        return db.prepare('SELECT id, ciphertext FROM vault_entries').all();
+    },
+    replaceCiphertext(id, ciphertext) {
+        db.prepare('UPDATE vault_entries SET ciphertext = ? WHERE id = ?').run(ciphertext, id);
     },
 };
 

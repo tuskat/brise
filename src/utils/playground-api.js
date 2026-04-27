@@ -47,11 +47,14 @@ export async function loadPlaygroundDropdowns(personaSelect, proxySelect) {
  * Returns parsed JSON result.
  */
 export async function sendPlaygroundRequest(payload) {
-  const res = await fetch('/api/proxy', {
+  const { withVaultHeader } = await import('./vault-token.js');
+  const { checkVaultLockedResponse } = await import('./vault-indicator.js');
+  let res = await fetch('/api/proxy', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: withVaultHeader({ 'Content-Type': 'application/json' }),
     body: JSON.stringify(payload)
   });
+  res = await checkVaultLockedResponse(res);
   const result = await res.json();
   return { ok: res.ok, status: res.status, data: result };
 }

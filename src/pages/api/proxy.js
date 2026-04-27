@@ -1,6 +1,7 @@
 import { logInteraction } from '../../lib/db.js';
-import { loadAllProxies } from '../../lib/proxy-loader.js';
+import { loadAllProxies, loadProxy } from '../../lib/proxy-loader.js';
 import { loadPersona } from '../../lib/persona-loader.js';
+import { resolveProxyForCall, vaultErrorResponse } from '../../lib/proxy-resolver.js';
 import { extractFormatContent, extractMultipleFormatContent, validateFormatContent, formatExtension, loadFormatSchema, buildFormatInstruction } from '../../lib/format-extractor.js';
 
 // Default proxy ID to use when none specified
@@ -50,9 +51,17 @@ export async function POST({ request }) {
             finalPrompt += formatInstruction;
         }
 
+        // Resolve secret from vault if needed
+        const proxyRow = await loadProxy(proxy_id);
+        if (!proxyRow) {
+            return new Response(JSON.stringify({ error: `Proxy '${proxy_id}' not found` }), { status: 404 });
+        }
+        const resolved = resolveProxyForCall(proxyRow, request);
+        if (resolved.error) return vaultErrorResponse(resolved.error);
+
         // Import the client and forward to selected proxy
         const { forwardToProxy } = await import('../../lib/proxy-client.js');
-        const result = await forwardToProxy(proxy_id, finalPrompt, parameters);
+        const result = await forwardToProxy(proxy_id, finalPrompt, parameters, { resolvedProxy: resolved.proxy });
 
         if (result.success) {
             aiResponse = result.data;

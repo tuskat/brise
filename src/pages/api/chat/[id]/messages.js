@@ -1,6 +1,7 @@
 import { dbOperations } from '../../../../db/index.js';
 import { chatWithProxy } from '../../../../lib/proxy-client.js';
 import { loadProxy } from '../../../../lib/proxy-loader.js';
+import { resolveProxyForCall, vaultErrorResponse } from '../../../../lib/proxy-resolver.js';
 
 /**
  * POST /api/chat/[id]/messages - Send message to conversation
@@ -66,12 +67,16 @@ export async function POST({ params, request }) {
         const systemPrompt = persona?.system_prompt || null;
         const personaName = persona?.name || null;
 
-        // Get proxy info for model
+        // Get proxy info for model + resolve secret from vault
         let model = conversation.model;
+        let resolvedProxy = null;
         if (conversation.proxy_id) {
             const proxy = await loadProxy(conversation.proxy_id);
             if (proxy) {
                 model = proxy.model;
+                const r = resolveProxyForCall(proxy, request);
+                if (r.error) return vaultErrorResponse(r.error);
+                resolvedProxy = r.proxy;
             }
         }
 
@@ -91,7 +96,8 @@ export async function POST({ params, request }) {
             // Streaming response (SSE)
             const result = await chatWithProxy(conversation.proxy_id, messages, parameters, {
                 stream: true,
-                systemPrompt
+                systemPrompt,
+                resolvedProxy,
             });
 
             if (!result.success && !result.stream) {
@@ -220,7 +226,8 @@ export async function POST({ params, request }) {
             // Non-streaming response
             const result = await chatWithProxy(conversation.proxy_id, messages, parameters, {
                 stream: false,
-                systemPrompt
+                systemPrompt,
+                resolvedProxy,
             });
 
             if (!result.success) {

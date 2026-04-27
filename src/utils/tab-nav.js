@@ -6,6 +6,8 @@
 import { loadMetrics } from './dashboard-state.js';
 import { loadPersonasList, initPersonasEvents } from './personas-state.js';
 import { loadProxiesList, initProxiesEvents, getProxies } from './proxies-state.js';
+import { initVaultEvents, refreshVaultView } from './vault-state.js';
+import { initVaultIndicator } from './vault-indicator.js';
 import { applyTranslations } from '../i18n/index.js';
 
 // ═══════════════════════════════════════════════════════════
@@ -32,6 +34,7 @@ function getRefs() {
     historyView:      document.getElementById('history-view'),
     personasView:  document.getElementById('personas-view'),
     proxiesView:   document.getElementById('proxies-view'),
+    vaultView:     document.getElementById('vault-view'),
     mainContent: document.querySelector('.main-content'),
   };
 }
@@ -106,7 +109,7 @@ function switchTab(tab) {
   });
 
   // Hide all views with a micro-fade reset so re-showing triggers animation
-  [refs.dashboardView, refs.chatView, refs.playgroundView, refs.historyView, refs.personasView, refs.proxiesView].forEach(v => {
+  [refs.dashboardView, refs.chatView, refs.playgroundView, refs.historyView, refs.personasView, refs.proxiesView, refs.vaultView].forEach(v => {
     if (v) {
       v.classList.add('js-hidden');
       v.classList.remove('js-view-visible');
@@ -150,6 +153,11 @@ function switchTab(tab) {
       refs.proxiesView?.classList.remove('js-hidden');
       requestAnimationFrame(() => refs.proxiesView?.classList.add('js-view-visible'));
       loadProxiesList();
+      break;
+    case 'vault':
+      refs.vaultView?.classList.remove('js-hidden');
+      requestAnimationFrame(() => refs.vaultView?.classList.add('js-view-visible'));
+      refreshVaultView();
       break;
   }
 
@@ -196,6 +204,8 @@ export function initTabNav() {
   if (!eventsInitialized) {
     initPersonasEvents();
     initProxiesEvents();
+    initVaultEvents();
+    initVaultIndicator();
 
     eventsInitialized = true;
   }
@@ -208,7 +218,7 @@ export function initTabNav() {
 
   // Restore saved tab or default to dashboard
   const savedTab = localStorage.getItem('brise_active_tab');
-  if (savedTab && ['dashboard','chat','playground','history','personas','proxies'].includes(savedTab)) {
+  if (savedTab && ['dashboard','chat','playground','history','personas','proxies','vault'].includes(savedTab)) {
     switchTab(savedTab);
   } else {
     switchTab('dashboard');

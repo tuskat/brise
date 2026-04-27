@@ -1,0 +1,125 @@
+<div id="vault-view" class="m-10 js-hidden">
+  <div class="row-between flex-wrap gap-lg">
+    <div>
+      <h2 class="t-hero" data-i18n="vault.title"></h2>
+      <p class="t-subtitle" data-i18n="vault.subtitle"></p>
+    </div>
+    <div class="flex-row gap-sm flex-wrap" id="vault-header-actions">
+      <button id="vault-lock-btn" class="btn btn-secondary js-hidden" data-i18n="vault.lock"></button>
+      <button id="vault-rotate-btn" class="btn btn-secondary js-hidden" data-i18n="vault.rotate"></button>
+      <button id="vault-new-btn" class="btn btn-primary js-hidden" data-i18n="vault.newEntry"></button>
+    </div>
+  </div>
+
+  <!-- State: uninitialized -->
+  <div id="vault-uninit" class="card mt-lg js-hidden">
+    <h3 class="t-card-title" data-i18n="vault.setup.title"></h3>
+    <p class="t-body c-secondary mt-sm" data-i18n="vault.setup.intro"></p>
+    <p class="t-body c-warning mt-sm" data-i18n="vault.setup.warning"></p>
+    <form id="vault-setup-form" class="flex-col gap-md mt-md">
+      <div class="flex-col gap-xs">
+        <label for="vault-setup-pass" class="label" data-i18n="vault.setup.passphrase"></label>
+        <input id="vault-setup-pass" type="password" class="input" autocomplete="new-password" required minlength="8" />
+      </div>
+      <div class="flex-col gap-xs">
+        <label for="vault-setup-pass2" class="label" data-i18n="vault.setup.confirm"></label>
+        <input id="vault-setup-pass2" type="password" class="input" autocomplete="new-password" required minlength="8" />
+      </div>
+      <button type="submit" class="btn btn-primary self-start" data-i18n="vault.setup.submit"></button>
+    </form>
+  </div>
+
+  <!-- State: locked -->
+  <div id="vault-locked" class="card mt-lg js-hidden">
+    <h3 class="t-card-title" data-i18n="vault.locked.title"></h3>
+    <p class="t-body c-secondary mt-sm" data-i18n="vault.locked.intro"></p>
+    <form id="vault-unlock-form" class="flex-col gap-md mt-md">
+      <div class="flex-col gap-xs">
+        <label for="vault-unlock-pass" class="label" data-i18n="vault.locked.passphrase"></label>
+        <input id="vault-unlock-pass" type="password" class="input" autocomplete="current-password" required />
+      </div>
+      <button type="submit" class="btn btn-primary self-start" data-i18n="vault.locked.submit"></button>
+    </form>
+  </div>
+
+  <!-- State: unlocked -->
+  <div id="vault-unlocked" class="js-hidden">
+    <div id="vault-entries-list" class="flex-col gap-md mt-lg">
+      <p class="placeholder" data-i18n="vault.loading"></p>
+    </div>
+  </div>
+</div>
+
+<!-- Entry create/edit modal -->
+<div id="vault-form-modal" class="modal">
+  <div class="modal-card">
+    <div class="row-between mb-md">
+      <h2 id="vault-form-title" class="t-section-title" data-i18n="vault.form.newTitle"></h2>
+      <button id="vault-form-close" class="modal-close" data-i18n-aria="general.close">&times;</button>
+    </div>
+    <form id="vault-form" class="flex-col gap-md">
+      <div class="flex-col gap-xs">
+        <label for="vf-label" class="label" data-i18n="vault.form.label"></label>
+        <input id="vf-label" type="text" class="input" required />
+      </div>
+      <div class="flex-col gap-xs">
+        <label for="vf-provider" class="label" data-i18n="vault.form.provider"></label>
+        <select id="vf-provider" class="input input-select">
+          <option value="anthropic">Anthropic</option>
+          <option value="openai">OpenAI</option>
+          <option value="groq">Groq</option>
+          <option value="ollama">Ollama</option>
+          <option value="openrouter">OpenRouter</option>
+          <option value="azure">Azure</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+      <div class="flex-col gap-xs">
+        <label for="vf-secret" class="label" data-i18n="vault.form.secret"></label>
+        <input id="vf-secret" type="password" class="input" autocomplete="off" />
+        <span class="t-caption c-tertiary" id="vf-secret-hint" data-i18n="vault.form.secretHint"></span>
+      </div>
+      <div class="flex-row gap-sm self-end mt-sm flex-wrap">
+        <button type="submit" class="btn btn-primary" id="vault-form-submit" data-i18n="vault.form.createBtn"></button>
+        <button type="button" class="btn btn-secondary" id="vault-form-cancel" data-i18n="general.cancel"></button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Rotate passphrase modal -->
+<div id="vault-rotate-modal" class="modal">
+  <div class="modal-card modal-card-sm">
+    <div class="row-between mb-md">
+      <h2 class="t-section-title" data-i18n="vault.rotate.title"></h2>
+      <button id="vault-rotate-close" class="modal-close" data-i18n-aria="general.close">&times;</button>
+    </div>
+    <p class="t-body c-secondary mb-md" data-i18n="vault.rotate.intro"></p>
+    <form id="vault-rotate-form" class="flex-col gap-md">
+      <div class="flex-col gap-xs">
+        <label for="vr-pass" class="label" data-i18n="vault.rotate.newPassphrase"></label>
+        <input id="vr-pass" type="password" class="input" autocomplete="new-password" required minlength="8" />
+      </div>
+      <div class="flex-col gap-xs">
+        <label for="vr-pass2" class="label" data-i18n="vault.rotate.confirm"></label>
+        <input id="vr-pass2" type="password" class="input" autocomplete="new-password" required minlength="8" />
+      </div>
+      <div class="flex-row gap-sm self-end mt-sm flex-wrap">
+        <button type="submit" class="btn btn-primary" data-i18n="vault.rotate.submit"></button>
+        <button type="button" class="btn btn-secondary" id="vault-rotate-cancel" data-i18n="general.cancel"></button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Delete confirmation -->
+<div id="vault-delete-modal" class="modal">
+  <div class="modal-card modal-card-sm">
+    <h2 class="t-section-title" data-i18n="vault.delete.title"></h2>
+    <p id="vault-delete-text" class="t-body c-secondary" style="margin:0.75rem 0 0"></p>
+    <div class="flex-row gap-sm self-end mt-sm flex-wrap">
+      <button id="vault-delete-confirm" class="btn btn-danger-fill" data-i18n="general.delete"></button>
+      <button id="vault-delete-cancel" class="btn btn-secondary" data-i18n="general.cancel"></button>
+    </div>
+  </div>
+</div>

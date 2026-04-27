@@ -81,11 +81,14 @@ export async function renameConversation(id, title) {
  * Returns the raw Response for the caller to consume the stream.
  */
 export async function sendMessageStream(conversationId, content) {
-  const res = await fetch('/api/chat/' + conversationId + '/messages', {
+  const { withVaultHeader } = await import('./vault-token.js');
+  const { checkVaultLockedResponse } = await import('./vault-indicator.js');
+  let res = await fetch('/api/chat/' + conversationId + '/messages', {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: withVaultHeader({ 'Content-Type': 'application/json' }),
     body: JSON.stringify({ content, stream: true })
   });
+  res = await checkVaultLockedResponse(res);
   if (!res.ok) {
     const errData = await res.json().catch(() => ({ error: 'Request failed' }));
     throw new Error(errData.error || 'Failed to send message');

@@ -71,17 +71,18 @@ describe('Proxy logging invariants', () => {
 // ═══════════════════════════════════════════════════════════
 
 describe('API key security invariants', () => {
-  it('proxies.js uses ASCII asterisks for key masking', () => {
+  it('proxies.js strips api_key from every response', () => {
     const source = readApi('proxies.js');
-    // Should NOT use Unicode bullet character
-    expect(source).not.toContain('•');
-    // Should use asterisks
-    expect(source).toContain('********');
+    // The publicProxy helper should remove api_key before serializing
+    expect(source).toMatch(/const\s*{\s*api_key\s*,\s*\.\.\.rest\s*}\s*=\s*p/);
   });
 
-  it('proxies.js rejects all-asterisk keys on PUT', () => {
+  it('proxies.js does not accept inline api_key in POST/PUT', () => {
     const source = readApi('proxies.js');
-    expect(source).toMatch(/\*{4,}/);
+    // Vault-entry-id is the only secret reference accepted from clients
+    expect(source).toContain('vault_entry_id');
+    // No destructuring of api_key from the request body
+    expect(source).not.toMatch(/const\s*{[^}]*\bapi_key\b[^}]*}\s*=\s*body/);
   });
 });
 

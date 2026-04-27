@@ -31,8 +31,8 @@ export function buildOpenAIUrl(baseUrl) {
  * @param {object} parameters - Persona parameters (temperature, top_p, max_tokens)
  * @returns {Promise<{success: boolean, data?: string, error?: string, latency?: number}>}
  */
-export async function forwardToProxy(proxyId, prompt, parameters = {}) {
-  const proxy = await loadProxy(proxyId);
+export async function forwardToProxy(proxyId, prompt, parameters = {}, opts = {}) {
+  const proxy = opts.resolvedProxy || await loadProxy(proxyId);
 
   if (!proxy) {
     return {
@@ -207,7 +207,7 @@ export async function forwardToOllama(prompt, parameters = {}) {
  * @returns {Promise<{success: boolean, data?: string, stream?: boolean, error?: string, latency?: number}>}
  */
 export async function chatWithProxy(proxyId, messages, parameters = {}, options = {}) {
-  const proxy = await loadProxy(proxyId);
+  const proxy = options.resolvedProxy || await loadProxy(proxyId);
 
   if (!proxy) {
     return { success: false, error: `Proxy '${proxyId}' not found` };

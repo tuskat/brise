@@ -6,6 +6,8 @@
 
 import { escapeHtml, formatTime } from './helpers.js';
 import { t } from '../i18n/index.js';
+import { withVaultHeader, getVaultToken } from './vault-token.js';
+import { checkVaultLockedResponse } from './vault-indicator.js';
 
 const showToast = () => window.showToast;
 
@@ -16,7 +18,7 @@ const showToast = () => window.showToast;
 let proxies = [];
 let editingProxyId = null;
 let deletingProxyId = null;
-let apiKeyEdited = false;
+let vaultEntries = [];
 
 /** Expose current proxies so tab-nav can sync dropdowns */
 export function getProxies() { return proxies; }
@@ -43,7 +45,59 @@ function getRefs() {
     apiKeyField:         document.getElementById('api-key-field'),
     apiSchemaSelect:     document.getElementById('px-schema'),
     urlHint:             document.getElementById('px-url-hint'),
+    vaultEntrySelect:    document.getElementById('px-vault-entry'),
+    vaultHint:           document.getElementById('px-vault-hint'),
   };
+}
+
+// ═══════════════════════════════════════════════════════════
+// VAULT PICKER
+// ═══════════════════════════════════════════════════════════
+
+async function loadVaultEntries() {
+  vaultEntries = [];
+  if (!getVaultToken()) return;
+  try {
+    const r = await fetch('/api/vault/entries', { headers: withVaultHeader() });
+    if (!r.ok) return;
+    const data = await r.json();
+    if (Array.isArray(data)) vaultEntries = data;
+  } catch { /* ignore */ }
+}
+
+function populateVaultPicker(selectedId, providerHint) {
+  const refs = getRefs();
+  const select = refs.vaultEntrySelect;
+  if (!select) return;
+
+  const filtered = providerHint
+    ? vaultEntries.filter(e => e.provider === providerHint || e.provider === 'other')
+    : vaultEntries;
+
+  // Preserve the placeholder option
+  select.innerHTML = '';
+  const blank = document.createElement('option');
+  blank.value = '';
+  blank.textContent = t('proxies.form.vaultEntryNone');
+  select.appendChild(blank);
+
+  for (const e of filtered) {
+    const opt = document.createElement('option');
+    opt.value = e.id;
+    opt.textContent = `${e.label} (${e.provider})`;
+    select.appendChild(opt);
+  }
+  if (selectedId) select.value = selectedId;
+
+  if (refs.vaultHint) {
+    if (!getVaultToken()) {
+      refs.vaultHint.textContent = t('proxies.form.vaultLocked');
+    } else if (filtered.length === 0) {
+      refs.vaultHint.textContent = t('proxies.form.vaultEmpty');
+    } else {
+      refs.vaultHint.textContent = t('proxies.form.vaultEntryHint');
+    }
+  }
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -134,11 +188,12 @@ async function checkAllProxyStatuses() {
     if (!proxyId) continue;
 
     try {
-      const response = await fetch('/api/proxies/test', {
+      let response = await fetch('/api/proxies/test', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: withVaultHeader({ 'Content-Type': 'application/json' }),
         body: JSON.stringify({ id: proxyId })
       });
+      response = await checkVaultLockedResponse(response);
 
       const result = await response.json();
       const statusEl = document.getElementById(`status-${proxyId}`);
@@ -178,7 +233,7 @@ async function testProxyById(id) {
   try {
     const response = await fetch('/api/proxies/test', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: withVaultHeader({ 'Content-Type': 'application/json' }),
       body: JSON.stringify({ id })
     });
 
@@ -198,10 +253,9 @@ async function testProxyById(id) {
 // MODAL MANAGEMENT
 // ═══════════════════════════════════════════════════════════
 
-function openNewProxyModal() {
+async function openNewProxyModal() {
   const refs = getRefs();
   editingProxyId = null;
-  apiKeyEdited = false;
   refs.proxyForm?.reset();
   if (refs.localCheckbox) refs.localCheckbox.checked = true;
   if (refs.apiKeyField) refs.apiKeyField.classList.add('js-hidden');
@@ -211,21 +265,21 @@ function openNewProxyModal() {
     refs.apiSchemaSelect.value = 'ollama';
     refs.apiSchemaSelect.dispatchEvent(new Event('change'));
   }
+  await loadVaultEntries();
+  populateVaultPicker(null, refs.apiSchemaSelect?.value);
   refs.proxyFormModal?.classList.add('js-open');
 }
 
-function openEditProxyModal(id) {
+async function openEditProxyModal(id) {
   const refs = getRefs();
   const proxy = proxies.find(p => p.id === id);
   if (!proxy) return;
 
   editingProxyId = id;
-  apiKeyEdited = false;
 
   const nameInput  = document.getElementById('px-name');
   const urlInput   = document.getElementById('px-url');
   const modelInput = document.getElementById('px-model');
-  const apiKeyInput = document.getElementById('px-apikey');
 
   if (nameInput)  nameInput.value = proxy.name;
   if (urlInput)   urlInput.value = proxy.url;
@@ -234,14 +288,12 @@ function openEditProxyModal(id) {
     refs.localCheckbox.checked = proxy.is_local_network;
     refs.localCheckbox.dispatchEvent(new Event('change'));
   }
-  if (apiKeyInput) {
-    apiKeyInput.value = '';
-    apiKeyInput.placeholder = proxy.api_key ? t('proxies.form.apiKeyEditPlaceholder') : t('proxies.form.apiKeyPlaceholder');
-  }
   if (refs.apiSchemaSelect) {
     refs.apiSchemaSelect.value = proxy.api_schema || 'ollama';
     refs.apiSchemaSelect.dispatchEvent(new Event('change'));
   }
+  await loadVaultEntries();
+  populateVaultPicker(proxy.vault_entry_id, refs.apiSchemaSelect?.value);
 
   if (refs.proxyFormTitle)  refs.proxyFormTitle.textContent = t('proxies.form.editTitle');
   if (refs.proxyFormSubmit) refs.proxyFormSubmit.textContent = t('proxies.form.saveBtn');
@@ -267,35 +319,24 @@ async function handleProxyFormSubmit(e) {
   e.preventDefault();
   const refs = getRefs();
 
-  const nameInput    = document.getElementById('px-name');
-  const urlInput     = document.getElementById('px-url');
-  const modelInput   = document.getElementById('px-model');
-  const apiKeyInput  = document.getElementById('px-apikey');
+  const nameInput  = document.getElementById('px-name');
+  const urlInput   = document.getElementById('px-url');
+  const modelInput = document.getElementById('px-model');
 
   const name             = nameInput?.value?.trim();
   const url              = urlInput?.value?.trim();
   const model            = modelInput?.value?.trim();
   const is_local_network = refs.localCheckbox?.checked ?? true;
   const api_schema       = refs.apiSchemaSelect?.value || 'ollama';
+  const vault_entry_id   = refs.vaultEntrySelect?.value || null;
 
   if (!name || !url || !model) {
     showToast()?.({ message: t('proxies.form.required'), variant: 'warning' });
     return;
   }
 
-  const rawApiKey = apiKeyInput?.value?.trim() || null;
-  const payload = { name, url, model, is_local_network, api_schema };
-
-  if (editingProxyId) {
-    if (!is_local_network && apiKeyEdited && rawApiKey) {
-      payload.api_key = rawApiKey;
-    }
-    payload.id = editingProxyId;
-  } else {
-    payload.api_key = is_local_network ? null : rawApiKey;
-  }
-
-  apiKeyEdited = false;
+  const payload = { name, url, model, is_local_network, api_schema, vault_entry_id };
+  if (editingProxyId) payload.id = editingProxyId;
 
   try {
     const method = editingProxyId ? 'PUT' : 'POST';
@@ -358,9 +399,12 @@ export function initProxiesEvents() {
   refs.newProxyBtn?.addEventListener('click', openNewProxyModal);
   refs.proxyForm?.addEventListener('submit', handleProxyFormSubmit);
   refs.confirmProxyDeleteBtn?.addEventListener('click', handleProxyDelete);
-  // Track when user actually edits the api_key field
-  const apiKeyInput = document.getElementById('px-apikey');
-  apiKeyInput?.addEventListener('input', () => { apiKeyEdited = true; });
+
+  // Re-filter vault picker when api_schema changes
+  refs.apiSchemaSelect?.addEventListener('change', () => {
+    const cur = refs.vaultEntrySelect?.value || null;
+    populateVaultPicker(cur, refs.apiSchemaSelect?.value);
+  });
 
   // Toggle API key field visibility
   refs.localCheckbox?.addEventListener('change', () => {

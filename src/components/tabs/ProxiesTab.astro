@@ -94,17 +94,11 @@
           ></span>
         </div>
         <div id="api-key-field" class="flex-col gap-xs js-hidden">
-          <label for="px-apikey" class="label" data-i18n="proxies.form.apiKey"
-          ></label>
-          <input
-            id="px-apikey"
-            type="password"
-            class="input"
-            data-i18n-placeholder="proxies.form.apiKeyPlaceholder"
-          />
-          <span
-            class="t-caption c-warning"
-            data-i18n="proxies.form.apiKeyWarning"></span>
+          <label for="px-vault-entry" class="label" data-i18n="proxies.form.vaultEntry"></label>
+          <select id="px-vault-entry" class="input input-select">
+            <option value="" data-i18n="proxies.form.vaultEntryNone"></option>
+          </select>
+          <span class="t-caption c-tertiary" id="px-vault-hint" data-i18n="proxies.form.vaultEntryHint"></span>
         </div>
         <div class="flex-row gap-sm flex-wrap">
           <button
