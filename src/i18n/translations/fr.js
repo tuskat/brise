@@ -105,6 +105,7 @@ export default {
   'pg.format.json': 'Schéma suggéré — gabarit JSON',
   'pg.format.json-strict': 'Schéma strict — la sortie doit valider le schéma JSON configuré ou elle sera rejetée',
   'pg.format.csv': 'Format suggéré — séparé par des virgules avec ligne d\'en-tête',
+  'pg.format.svg': 'Format suggéré — un seul élément <svg>, sans scripts ni gestionnaires d\'événements',
 
   // ── Format select options ──
   'pg.formatOption.md': 'Markdown (.md)',
@@ -112,6 +113,7 @@ export default {
   'pg.formatOption.json': 'JSON (.json)',
   'pg.formatOption.json-strict': 'JSON Strict (.json)',
   'pg.formatOption.csv': 'CSV (.csv)',
+  'pg.formatOption.svg': 'SVG (.svg)',
 
   // ── History ──
   'history.title': 'Historique',

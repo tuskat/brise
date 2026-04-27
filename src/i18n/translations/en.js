@@ -105,6 +105,7 @@ export default {
   'pg.format.json': 'Suggested schema — JSON boilerplate',
   'pg.format.json-strict': 'Strict schema — output must validate against the configured JSON schema or it will be rejected',
   'pg.format.csv': 'Suggested format — comma-separated with header row',
+  'pg.format.svg': 'Suggested format — single inline <svg> element, no scripts or event handlers',
 
   // ── Format select options ──
   'pg.formatOption.md': 'Markdown (.md)',
@@ -112,6 +113,7 @@ export default {
   'pg.formatOption.json': 'JSON (.json)',
   'pg.formatOption.json-strict': 'JSON Strict (.json)',
   'pg.formatOption.csv': 'CSV (.csv)',
+  'pg.formatOption.svg': 'SVG (.svg)',
 
   // ── History ──
   'history.title': 'History',

@@ -1,0 +1,12 @@
+{
+  "format": "svg",
+  "type": "suggestion",
+  "suggestions": [
+    "Output must be a single, valid <svg>...</svg> element",
+    "Include xmlns=\"http://www.w3.org/2000/svg\" on the root <svg> element",
+    "Set an explicit viewBox (e.g. viewBox=\"0 0 100 100\")",
+    "Use only static elements: rect, circle, ellipse, line, polyline, polygon, path, text, g, defs, linearGradient, radialGradient, stop",
+    "No <script> tags, no event handlers (onclick, onload, etc.), no external references (xlink:href to remote URLs)",
+    "Inline styles via the style attribute or a <style> block — no external stylesheets"
+  ]
+}

@@ -56,6 +56,15 @@ export function validateFormatContent(content, format) {
         return { valid: false, error: `Invalid JSON: ${e.message}` };
       }
 
+    case 'svg':
+      if (!/<svg[\s>]/i.test(content) || !/<\/svg>/i.test(content)) {
+        return { valid: false, error: 'SVG must contain <svg> and </svg> tags' };
+      }
+      if (/<script[\s>]/i.test(content) || /\son\w+\s*=/i.test(content)) {
+        return { valid: false, error: 'SVG must not contain <script> tags or event handlers' };
+      }
+      return { valid: true };
+
     case 'csv':
       const lines = content.trim().split('\n');
       if (lines.length < 2) {
@@ -75,7 +84,7 @@ export function validateFormatContent(content, format) {
  * Get the file extension for a format.
  */
 export function formatExtension(format) {
-  const map = { md: 'md', html: 'html', json: 'json', 'json-strict': 'json', csv: 'csv' };
+  const map = { md: 'md', html: 'html', json: 'json', 'json-strict': 'json', csv: 'csv', svg: 'svg' };
   return map[format] || 'txt';
 }
 
