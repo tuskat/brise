@@ -35,12 +35,22 @@ export function showVaultLocked() {
   const text = el.querySelector('.vault-locked-indicator-text');
   if (text) text.textContent = t('vault.indicator.locked');
   el.title = t('vault.indicator.tooltip');
+  if (el._hideTimer) { clearTimeout(el._hideTimer); el._hideTimer = null; }
+  el.style.display = '';
   el.classList.remove('js-hidden');
 }
 
 export function hideVaultLocked() {
-  document.getElementById(ID)?.classList.add('js-hidden');
+  const el = document.getElementById(ID);
+  if (!el) return;
+  el.classList.add('js-hidden');
+  // Remove from layout after fade completes so it doesn't block interaction
+  el._hideTimer = setTimeout(() => {
+    el.style.display = 'none';
+    el._hideTimer = null;
+  }, 350);
 }
+
 
 /** Inspect a fetch Response; if it's 401 vault_locked, show the indicator. Returns the same response. */
 export async function checkVaultLockedResponse(response) {
