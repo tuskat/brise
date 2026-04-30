@@ -6,7 +6,7 @@ Thanks for your interest! Here's how to get started.
 
 ```bash
 # Clone and install
-git clone https://github.com/cedricmarcellin/brise.git
+git clone https://github.com/tuskat/brise.git
 cd brise
 npm install
 
@@ -37,7 +37,7 @@ npm test
 
 ## Reporting Bugs
 
-Open a [GitHub Issue](https://github.com/cedricmarcellin/brise/issues) with:
+Open a [GitHub Issue](https://github.com/tuskat/brise/issues) with:
 
 - What you expected to happen
 - What actually happened

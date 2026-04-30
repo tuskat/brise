@@ -89,4 +89,4 @@ Before deploying:
 
 ## Reporting Security Issues
 
-If you discover a security vulnerability, please **do not** open a public GitHub issue. Instead, open a [GitHub Security Advisory](https://github.com/cedricmarcellin/brise/security/advisories/new) or email the maintainer. We aim to respond within 48 hours.
+If you discover a security vulnerability, please **do not** open a public GitHub issue. Instead, open a [GitHub Security Advisory](https://github.com/tuskat/brise/security/advisories/new) or email the maintainer. We aim to respond within 48 hours.

@@ -207,6 +207,12 @@ SHARE_GID=$(ssh_run "stat -c %g '$DEPLOY_PATH/data' 2>/dev/null" | tr -d '[:spac
 [ -n "$SHARE_GID" ] && [ "$SHARE_GID" != "0" ] && APP_GID="$SHARE_GID"
 info "Container will run as UID:GID $APP_UID:$APP_GID"
 
+info "Checking local Docker..."
+if ! docker info >/dev/null 2>&1; then
+  error "Local Docker daemon is not running. Start Docker Desktop and try again."
+fi
+info "Local Docker OK ✓"
+
 info "Building Docker image locally for $DOCKER_PLATFORM..."
 GIT_SHA=$(git rev-parse --short HEAD 2>/dev/null || echo "unknown")
 docker build --platform "$DOCKER_PLATFORM" \

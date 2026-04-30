@@ -12,7 +12,7 @@ description: Install and run Brise locally.
 
 ```bash
 # Clone the repository
-git clone https://github.com/cedricmarcellin/brise.git
+git clone https://github.com/tuskat/brise.git
 cd brise
 
 # Install dependencies

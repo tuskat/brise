@@ -101,4 +101,4 @@ Returns:
 
 ## Security Warning
 
-Brise does **not** implement authentication, rate limiting, or API key encryption. It is designed for **trusted networks only**. See [SECURITY.md](https://github.com/cedricmarcellin/brise/blob/main/SECURITY.md) for details.
+Brise does **not** implement authentication, rate limiting, or API key encryption. It is designed for **trusted networks only**. See [SECURITY.md](https://github.com/tuskat/brise/blob/main/SECURITY.md) for details.

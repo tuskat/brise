@@ -9,7 +9,7 @@ export default defineConfig({
       title: 'Brise Docs',
       description: 'Documentation for Brise',
       social: [
-        { icon: 'github', label: 'GitHub', href: 'https://github.com/cedricmarcellin/brise' },
+        { icon: 'github', label: 'GitHub', href: 'https://github.com/tuskat/brise' },
       ],
       sidebar: [
         {
