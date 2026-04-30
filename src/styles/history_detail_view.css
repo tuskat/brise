@@ -163,6 +163,12 @@
   overflow-y: auto;
 }
 
+/* SVG rendered inside code-block-pre gets proportional sizing */
+.detail-code-block-pre svg {
+  max-width: 100%;
+  height: auto;
+}
+
 /* ── Batch group (history list) ── */
 .pg-batch-group {
   border: 1px solid var(--border-secondary);
