@@ -1,6 +1,6 @@
 /**
  * Vault state — passphrase setup/unlock, entry CRUD, session token management.
- * Token lives in sessionStorage (survives page reload, dies with the tab).
+ * Token lives in localStorage (survives page reload, dies with the tab).
  */
 
 import { escapeHtml } from './helpers.js';
@@ -69,9 +69,9 @@ let pendingVaultBundle = null;
 // TOKEN + FETCH
 // ═══════════════════════════════════════════════════════════
 
-function getToken() { return sessionStorage.getItem(TOKEN_KEY); }
-function setToken(tok) { sessionStorage.setItem(TOKEN_KEY, tok); }
-function clearToken() { sessionStorage.removeItem(TOKEN_KEY); }
+function getToken() { return localStorage.getItem(TOKEN_KEY); }
+function setToken(tok) { localStorage.setItem(TOKEN_KEY, tok); }
+function clearToken() { localStorage.removeItem(TOKEN_KEY); }
 
 async function vaultFetch(path, opts = {}) {
   const headers = { ...(opts.headers || {}) };

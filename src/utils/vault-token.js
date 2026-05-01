@@ -3,7 +3,7 @@
 const TOKEN_KEY = 'brise_vault_token';
 
 export function getVaultToken() {
-  try { return sessionStorage.getItem(TOKEN_KEY); } catch { return null; }
+  try { return localStorage.getItem(TOKEN_KEY); } catch { return null; }
 }
 
 export function withVaultHeader(headers = {}) {

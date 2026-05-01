@@ -12,7 +12,7 @@ adheres to [Semantic Versioning](https://semver.org/).
   conflict modes skip/overwrite/rename. Export/Import buttons in Personas tab.
 - Vault tab: AES-256-GCM + scrypt encrypted secret store. Setup, unlock,
   lock, rotate-passphrase, per-entry CRUD with masked previews and
-  reveal-on-click. Session token in `sessionStorage`, 15-min idle timeout.
+  reveal-on-click. Session token in `localStorage`, 15-min idle timeout.
 - Bottom-right "Vault locked" indicator pill — appears when the vault is
   initialized but locked or after a 401 vault_locked from any API call;
   click to jump to the Vault tab.
